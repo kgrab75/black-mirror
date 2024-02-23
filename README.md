@@ -2,6 +2,14 @@
 An application for a connected mirror
 
 ## Modules
+Each mouule should have between 2 and 4 displays:
+ - Widget (1/8)
+ - Quarter screen
+ - Half screen
+ - Full screen
+
+### Weather
+Display the weather
 
 ### Lists
 To-Do or To-Buy Lists
