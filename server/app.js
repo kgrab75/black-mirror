@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 
+const ListRouter = require("./routes/list.route");
+const AuthRouter = require("./routes/auth.route");
+
 const app = express();
 
 /* Telling the application to use the express.json() middleware. This middleware will parse the body of
@@ -13,7 +16,13 @@ app.use(cors());
 /* This is a route handler. It is listening for a GET request to the root route of the application.
 When it receives a request, it will send back a response with the string "Hello World!". */
 app.get("/", (req, res) => {
-    res.send("Hello World! Hey");
+    res.send("Hello World!");
 });
+
+/* Telling the application to use the ActivityRouter for any requests that start with "/api". */
+app.use("/api", ListRouter);
+
+/* Telling the application to use the AuthRouter for any requests that start with "/api/auth". */
+app.use("/api/auth", AuthRouter);
 
 module.exports = app;

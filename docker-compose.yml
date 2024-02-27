@@ -13,8 +13,8 @@ services:
     # Mapping the client directory on the host machine to the /app directory on the container.
     volumes:
       - ./client:/app
-      - /app/node_modules
-    # Allows you to run container in detached mode.
+      # - /app/node_modules
+      # Allows you to run container in detached mode.
     stdin_open: true
     tty: true
   server:
@@ -25,7 +25,7 @@ services:
       - "5000:5000"
     volumes:
       - ./server:/app
-      - /app/node_modules
-    # Allows you to run container in detached mode.
+      # - /app/node_modules
+      # Allows you to run container in detached mode.
     stdin_open: true
     tty: true
