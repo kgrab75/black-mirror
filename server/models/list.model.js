@@ -8,6 +8,10 @@ const listSchema = new Schema({
         type: String,
         required: true,
     },
+    email: {
+        type: String,
+        required: true,
+    }
     // default: {
     //     type: Boolean,
     //     required: true,

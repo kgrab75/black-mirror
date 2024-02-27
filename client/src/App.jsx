@@ -4,6 +4,24 @@ import "./App.css";
 
 const App = () => {
   const [lists, setLists] = useState([]);
+  const token = localStorage.getItem("token");
+
+  /* Fetching the data from the backend and setting the state of lists to the data. */
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/lists`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await result.json();
+      setLists(data);
+    };
+    fetchData();
+  }, [token]);
 
   const addList = async (event) => {
     event.preventDefault();
@@ -16,6 +34,7 @@ const App = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(newList),
     });
@@ -23,18 +42,6 @@ const App = () => {
     event.target.list.value = ""; // sets input empty after clicking submit
     window.location.reload(); // reloads the window after sending request
   };
-
-  /* Fetching the data from the backend and setting the state of lists to the data. */
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/lists`
-      );
-      const data = await result.json();
-      setLists(data);
-    };
-    fetchData();
-  }, []);
 
   return <div className="app">
     <header className="app-header">
