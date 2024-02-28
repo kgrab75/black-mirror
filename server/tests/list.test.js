@@ -3,8 +3,17 @@ const request = require("supertest");
 
 const app = require("../app");
 
+
+const fs = require('fs');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, `../.env.${process.env.NODE_ENV}`), override: true });
+const envPath = path.join(__dirname, `../.env.${process.env.NODE_ENV}`);
+const dotenv = require('dotenv');
+
+if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath, override: true });
+} else {
+    dotenv.config();
+}
 
 /* Connecting to the database before each test. */
 beforeEach(async () => {
