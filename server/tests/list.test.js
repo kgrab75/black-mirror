@@ -15,8 +15,6 @@ if (fs.existsSync(envPath)) {
     dotenv.config();
 }
 
-console.log(process.env.MONGODB_URI);
-
 /* Connecting to the database before each test. */
 beforeEach(async () => {
     await mongoose.connect(process.env.MONGODB_URI);
