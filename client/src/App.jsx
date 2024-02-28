@@ -45,8 +45,8 @@ const App = () => {
 
   return <div className="app">
     <header className="app-header">
-      <h1>Add a list</h1>
-      <form onSubmit={addList}>
+      <h1 data-testid={"app-header-heading"}>Add a list</h1>
+      <form onSubmit={addList} data-testid={"app-header-form"}>
         <div>
           <label htmlFor="list">List:</label>
           <input
@@ -54,15 +54,16 @@ const App = () => {
             id="list"
             name="list"
             autoComplete="off"
+            data-testid={"app-header-input"}
           />
         </div>
-        <button type="submit">Add</button>
+        <button type="submit" data-testid={"app-header-submit"}>Add</button>
       </form>
     </header>
     <main className="app-main">
       <h2>Today</h2>
       {lists && lists.length > 0 ? (
-        <ol>
+        <ol data-testid={"app-main-lists"}>
           {lists.map((list) => (
             <li key={list._id}>
               {list.name}

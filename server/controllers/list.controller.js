@@ -22,7 +22,6 @@ const getLists = async (req, res) => {
  * @param res - the response object
  */
 const addList = async (req, res) => {
-  console.log(req.userData);
   const list = new List({ ...req.body, email: req.userData.email });
 
   try {
