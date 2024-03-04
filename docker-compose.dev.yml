@@ -1,0 +1,26 @@
+# The version of the docker-compose.
+version: "1.0"
+# Telling docker-compose to build the client and server images and run them in containers.
+services:
+  nginx:
+    image: kgrab75/black-mirror:nginx-latest
+    restart: always
+    depends_on:
+      - client
+      - server
+    ports:
+      - "80:80"
+
+  client:
+    image: kgrab75/black-mirror:client-latest
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+
+  server:
+    image: kgrab75/black-mirror:server-latest
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - TOKEN_KEY=${TOKEN_KEY}
+      - EMAIL=${EMAIL}
+      - PASSWORD=${PASSWORD}
