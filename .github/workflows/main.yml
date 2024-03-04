@@ -49,14 +49,21 @@ jobs:
         working-directory: ./client
         # Build image with tag $DOCKER_USERNAME/$REPO_NAME:client
         run: |
-          docker build -t $DOCKER_USERNAME/$REPO_NAME:client-${{github.run_number}} .
+          docker build -t $DOCKER_USERNAME/$REPO_NAME:client-${{github.run_number}} -t $DOCKER_USERNAME/$REPO_NAME:client-latest .
                 
       # Build a Docker image for the server application
-      - name: Build Client Docker Image
+      - name: Build Server Docker Image
         working-directory: ./server
         # Build image with tag $DOCKER_USERNAME/$REPO_NAME:server
         run: |
-          docker build -t $DOCKER_USERNAME/$REPO_NAME:server-${{github.run_number}} .
+          docker build -t $DOCKER_USERNAME/$REPO_NAME:server-${{github.run_number}} -t $DOCKER_USERNAME/$REPO_NAME:server-latest .
+
+      # Build a Docker image for the NGINX reverse proxy
+      - name: Build NGINX Docker Image
+        working-directory: ./nginx
+        # Build image with tag $DOCKER_USERNAME/$REPO_NAME:nginx
+        run: |
+          docker build -t $DOCKER_USERNAME/$REPO_NAME:nginx-${{github.run_number}} -t $DOCKER_USERNAME/$REPO_NAME:nginx-latest .
           
       # Login to Docker Hub using credentials from repository secrets
       - name: Login to Docker Hub
@@ -70,3 +77,19 @@ jobs:
         run: |
           docker push $DOCKER_USERNAME/$REPO_NAME:client-${{github.run_number}}
           docker push $DOCKER_USERNAME/$REPO_NAME:server-${{github.run_number}}
+          docker push $DOCKER_USERNAME/$REPO_NAME:nginx-${{github.run_number}}
+          docker push $DOCKER_USERNAME/$REPO_NAME:client-latest
+          docker push $DOCKER_USERNAME/$REPO_NAME:server-latest
+          docker push $DOCKER_USERNAME/$REPO_NAME:nginx-latest
+          
+      # This is the step that is deploying the application to Elastic Beanstalk.
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ secrets.EB_APP_NAME }}
+          environment_name: ${{ secrets.EB_ENV_NAME }}
+          region: ${{ secrets.EB_REGION }}
+          version_label: "version-${{ github.run_number }}"
+          deployment_package: docker-compose.yml
