@@ -1,0 +1,282 @@
+{
+	"0":{
+		"day":{
+			"description":"Ensoleillé",
+			"icon":"01d"
+		},
+		"night":{
+			"description":"Clair",
+			"icon":"01n"
+		}
+	},
+	"1":{
+		"day":{
+			"description":"Principalement ensoleillé",
+			"icon":"01d"
+		},
+		"night":{
+			"description":"Principalement clair",
+			"icon":"01n"
+		}
+	},
+	"2":{
+		"day":{
+			"description":"Partiellement nuageux",
+			"icon":"02d"
+		},
+		"night":{
+			"description":"Partiellement nuageux",
+			"icon":"02n"
+		}
+	},
+	"3":{
+		"day":{
+			"description":"Nuageux",
+			"icon":"03d"
+		},
+		"night":{
+			"description":"Nuageux",
+			"icon":"03n"
+		}
+	},
+	"45":{
+		"day":{
+			"description":"Brumeux",
+			"icon":"50d"
+		},
+		"night":{
+			"description":"Brumeux",
+			"icon":"50n"
+		}
+	},
+	"48":{
+		"day":{
+			"description":"Brouillard givrant",
+			"icon":"50d"
+		},
+		"night":{
+			"description":"Brouillard givrant",
+			"icon":"50n"
+		}
+	},
+	"51":{
+		"day":{
+			"description":"Bruine légère",
+			"icon":"09d"
+		},
+		"night":{
+			"description":"Bruine légère",
+			"icon":"09n"
+		}
+	},
+	"53":{
+		"day":{
+			"description":"Bruine",
+			"icon":"09d"
+		},
+		"night":{
+			"description":"Bruine",
+			"icon":"09n"
+		}
+	},
+	"55":{
+		"day":{
+			"description":"Bruine forte",
+			"icon":"09d"
+		},
+		"night":{
+			"description":"Bruine forte",
+			"icon":"09n"
+		}
+	},
+	"56":{
+		"day":{
+			"description":"Bruine verglaçante légère",
+			"icon":"09d"
+		},
+		"night":{
+			"description":"Bruine verglaçante légère",
+			"icon":"09n"
+		}
+	},
+	"57":{
+		"day":{
+			"description":"Bruine verglaçante",
+			"icon":"09d"
+		},
+		"night":{
+			"description":"Bruine verglaçante",
+			"icon":"09n"
+		}
+	},
+	"61":{
+		"day":{
+			"description":"Pluie légère",
+			"icon":"10d"
+		},
+		"night":{
+			"description":"Pluie légère",
+			"icon":"10n"
+		}
+	},
+	"63":{
+		"day":{
+			"description":"Pluie",
+			"icon":"10d"
+		},
+		"night":{
+			"description":"Pluie",
+			"icon":"10n"
+		}
+	},
+	"65":{
+		"day":{
+			"description":"Forte pluie",
+			"icon":"10d"
+		},
+		"night":{
+			"description":"Forte pluie",
+			"icon":"10n"
+		}
+	},
+	"66":{
+		"day":{
+			"description":"Pluie verglaçante légère",
+			"icon":"10d"
+		},
+		"night":{
+			"description":"Pluie verglaçante légère",
+			"icon":"10n"
+		}
+	},
+	"67":{
+		"day":{
+			"description":"Pluie verglaçante",
+			"icon":"10d"
+		},
+		"night":{
+			"description":"Pluie verglaçante",
+			"icon":"10n"
+		}
+	},
+	"71":{
+		"day":{
+			"description":"Neige légère",
+			"icon":"13d"
+		},
+		"night":{
+			"description":"Neige légère",
+			"icon":"13n"
+		}
+	},
+	"73":{
+		"day":{
+			"description":"Neige",
+			"icon":"13d"
+		},
+		"night":{
+			"description":"Neige",
+			"icon":"13n"
+		}
+	},
+	"75":{
+		"day":{
+			"description":"Forte neige",
+			"icon":"13d"
+		},
+		"night":{
+			"description":"Forte neige",
+			"icon":"13n"
+		}
+	},
+	"77":{
+		"day":{
+			"description":"Grains de neige",
+			"icon":"13d"
+		},
+		"night":{
+			"description":"Grains de neige",
+			"icon":"13n"
+		}
+	},
+	"80":{
+		"day":{
+			"description":"Averses légères",
+			"icon":"09d"
+		},
+		"night":{
+			"description":"Averses légères",
+			"icon":"09n"
+		}
+	},
+	"81":{
+		"day":{
+			"description":"Averses",
+			"icon":"09d"
+		},
+		"night":{
+			"description":"Averses",
+			"icon":"09n"
+		}
+	},
+	"82":{
+		"day":{
+			"description":"Fortes averses",
+			"icon":"09d"
+		},
+		"night":{
+			"description":"Fortes averses",
+			"icon":"09n"
+		}
+	},
+	"85":{
+		"day":{
+			"description":"Averses de neige légère",
+			"icon":"13d"
+		},
+		"night":{
+			"description":"Averses de neige légère",
+			"icon":"13n"
+		}
+	},
+	"86":{
+		"day":{
+			"description":"Averses de neige",
+			"icon":"13d"
+		},
+		"night":{
+			"description":"Averses de neige",
+			"icon":"13n"
+		}
+	},
+	"95":{
+		"day":{
+			"description":"Orage",
+			"icon":"11d"
+		},
+		"night":{
+			"description":"Orage",
+			"icon":"11n"
+		}
+	},
+	"96":{
+		"day":{
+			"description":"Orages légers avec grêle",
+			"icon":"11d"
+		},
+		"night":{
+			"description":"Orages légers avec grêle",
+			"icon":"11n"
+		}
+	},
+	"99":{
+		"day":{
+			"description":"Orage avec grêle",
+			"icon":"11d"
+		},
+		"night":{
+			"description":"Orage avec grêle",
+			"icon":"11n"
+		}
+	}
+}

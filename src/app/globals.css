@@ -31,3 +31,58 @@ body {
     text-wrap: balance;
   }
 }
+
+html,
+body,
+main {
+  height: 100%;
+}
+
+.modules-container,
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  height: inherit;
+  position: absolute;
+  width: 100%;
+}
+
+.module {
+  /* background-color: #d3d3d31f; */
+  font-size: 20px;
+  color: white;
+  border: 1px solid transparent;
+  overflow: hidden;
+}
+
+.module-edit {
+  background-color: #d3d3d31f;
+  border: 1px solid #008fff66;
+}
+
+.mirror-grid {
+  border-right: 1px dashed #008fff66;
+  border-bottom: 1px dashed #008fff66;
+  display: flex;
+  color: #008fff99;
+  font-size: 0.8rem;
+}
+
+.module-draft {
+  background-color: #001425;
+  border: 4px dashed #008fff;
+}
+
+.gallery {
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(0%);
+}
+
+.gallery.animating.next {
+  transform: translateX(-100%);
+}
+
+.gallery.animating.prev {
+  transform: translateX(100%);
+}
