@@ -49,6 +49,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64,linux/arm64
           build-args: |
             ARG_SECRET_BASE_HOSTNAME=${{ secrets.SECRET_BASE_HOSTNAME }}
             ARG_SECRET_NEXT_PUBLIC_OPEN_WEATHER_API_KEY=${{ secrets.SECRET_NEXT_PUBLIC_OPEN_WEATHER_API_KEY }}
