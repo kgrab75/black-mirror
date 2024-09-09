@@ -1,5 +1,9 @@
 FROM node:18-alpine AS base
 
+LABEL org.opencontainers.image.source=https://github.com/kgrab75/black-mirror
+LABEL org.opencontainers.image.description="My container image"
+LABEL org.opencontainers.image.licenses=MIT
+
 ARG ARG_SECRET_BASE_HOSTNAME
 ARG ARG_SECRET_NEXT_PUBLIC_OPEN_WEATHER_API_KEY
 ARG ARG_SECRET_BASE_URL_DOMO
