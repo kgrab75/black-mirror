@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   const authUrl = nylas.auth.urlForOAuth2({
     clientId: config.clientId,
-    redirectUri: config.callbackUri,
+    redirectUri: config.callbackUri(request),
     state: JSON.stringify({ moduleId })
   });
 

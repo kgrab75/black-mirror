@@ -39,6 +39,12 @@ export default function Mirror() {
   useSpeechRecognition({
     commands: [
       {
+        command: ['Recharge la page'],
+        callback: () => {
+          location.reload();
+        },
+      },
+      {
         command: ['Mode édition'],
         callback: () => {
           setIsEditing(true);
