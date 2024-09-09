@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const codeExchangePayload = {
     clientSecret: config.apiKey,
     clientId: config.clientId,
-    redirectUri: config.callbackUri,
+    redirectUri: config.callbackUri(request),
     code,
   } as CodeExchangeRequest;
 
