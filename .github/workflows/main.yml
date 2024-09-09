@@ -21,7 +21,7 @@ jobs:
       packages: write
       attestations: write
       id-token: write
-      # 
+      #
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,12 +49,20 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      
-      # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built. It increases supply chain security for people who consume the image. For more information, see "[AUTOTITLE](/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds)." 
+          build-args: |
+            ARG_SECRET_BASE_HOSTNAME=${{ secrets.SECRET_BASE_HOSTNAME }}
+            ARG_SECRET_NEXT_PUBLIC_OPEN_WEATHER_API_KEY=${{ secrets.SECRET_NEXT_PUBLIC_OPEN_WEATHER_API_KEY }}
+            ARG_SECRET_BASE_URL_DOMO=${{ secrets.SECRET_BASE_URL_DOMO }}
+            ARG_SECRET_USERNAME_DOMO=${{ secrets.SECRET_USERNAME_DOMO }}
+            ARG_SECRET_PASSWORD_DOMO=${{ secrets.SECRET_PASSWORD_DOMO }}
+            ARG_SECRET_NYLAS_CLIENT_ID=${{ secrets.SECRET_NYLAS_CLIENT_ID }}
+            ARG_SECRET_NYLAS_API_KEY=${{ secrets.SECRET_NYLAS_API_KEY }}
+            ARG_SECRET_NYLAS_API_URI=${{ secrets.SECRET_NYLAS_API_URI }}
+
+      # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built. It increases supply chain security for people who consume the image. For more information, see "[AUTOTITLE](/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds)."
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
-      
