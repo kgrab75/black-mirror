@@ -38,7 +38,7 @@ export default function Modules({
 
   const commands = [
     {
-      command: ['Ajoute un (nouveau) module', 'Rajoute un (nouveau) module'],
+      command: ['Nouveau module', 'Rajoute un (nouveau) module'],
       callback: async () => {
         const draftModule = getDraftModule(modules);
 

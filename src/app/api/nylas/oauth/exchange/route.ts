@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const codeExchangePayload = {
     clientSecret: config.apiKey,
     clientId: config.clientId,
-    redirectUri: config.callbackUri(request),
+    redirectUri: config.callbackUri(),
     code,
   } as CodeExchangeRequest;
 
@@ -39,8 +39,7 @@ export async function GET(request: NextRequest) {
 
     await updateModule(iModuleId, { options: { grantId, primaryCalendar } });
 
-    const url = new URL('/', request.url);
-    url.hostname = process.env.BASE_HOSTNAME || url.hostname;
+    const url = new URL('/', process.env.BASE_URL);
 
     return NextResponse.redirect(url);
   } catch (error) {
