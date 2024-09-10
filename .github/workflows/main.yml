@@ -56,7 +56,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
           build-args: |
-            BASE_HOSTNAME=${{ secrets.BASE_HOSTNAME }}
+            BASE_URL=${{ secrets.BASE_URL }}
             NEXT_PUBLIC_OPEN_WEATHER_API_KEY=${{ secrets.NEXT_PUBLIC_OPEN_WEATHER_API_KEY }}
             BASE_URL_DOMO=${{ secrets.BASE_URL_DOMO }}
             USERNAME_DOMO=${{ secrets.USERNAME_DOMO }}
