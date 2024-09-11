@@ -161,18 +161,18 @@ export default function Lists(props: ListsProps) {
       {loading ? (
         <Loader />
       ) : (
-        <TextFit widthFactor={0.1} heightFactor={0.4} refParent={ref}>
+        <TextFit widthFactor={0.09} heightFactor={0.4} refParent={ref}>
           <div className="flex relative size-full">
             <div
               className="size-full absolute transition ease-in-out duration-500"
               style={{ transform: `translateX(${rightPosFirstColumn})` }}
             >
-              <ul className="">
+              <ul className="leading-[1.1]">
                 {lists.map((list) => (
                   <li key={list.listUuid}>
                     {list.name}{' '}
                     {list.items.length > 0 && (
-                      <span className="inline-flex items-center justify-center w-4 h-4 text-xs font-semibold text-black bg-white rounded-full align-[3px]">
+                      <span className="inline-flex items-center justify-center size-[1.2em] text-[0.6em] font-semibold text-black bg-white rounded-full align-[3px]">
                         {list.items.length}
                       </span>
                     )}
@@ -185,12 +185,12 @@ export default function Lists(props: ListsProps) {
               className="size-full absolute transition ease-in-out duration-500"
               style={{ transform: `translateX(${rightPosSecondColumn})` }}
             >
-              <div className="border-2 mx-auto w-fit px-2 rounded-t-lg bg-slate-600 z-10 relative">
+              <div className="border-2 mx-auto w-fit px-2 rounded-t-lg bg-slate-600 z-10 relative leading-tight">
                 {getList(currentListUuid).name}
               </div>
-              <div className="border-2 h-[calc(100%-1em)] -top-[0.9em] relative rounded-lg">
-                <div className="border h-[inherit] mx-4 my-4 bg-white bg-opacity-10">
-                  <ul className="px-2 absolute w-[calc(100%-2rem-2px)] top-[0.7rem] overflow-hidden h-[inherit] leading-tight">
+              <div className="border-2 h-[calc(100%-1em)] -top-[0.6em] relative rounded-lg">
+                <div className="border h-[calc(100%-0.7em)] m-[0.3em] bg-white bg-opacity-10">
+                  <ul className="px-[0.3em] absolute w-[calc(100%-0.6em-2px)] top-[0.15em] overflow-hidden h-[inherit] leading-tight">
                     {Array.from({ length: 5 * props.height }).map(
                       (_, index) => (
                         <li
