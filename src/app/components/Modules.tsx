@@ -29,6 +29,7 @@ export default function Modules({
   const { modules, setModules } = useModules();
   const { views } = useViews();
   const [newModule, setNewModule] = useState(false);
+  const [nightMode, setNightMode] = useState(false);
   const [displayCreateModule, setDisplayCreateModule] = useState(false);
   const draftModule = getDraftModule(modules);
   const { showNotification } = useNotification();
@@ -119,7 +120,14 @@ export default function Modules({
         }
       },
     },
-
+    {
+      command: 'Mode nuit',
+      callback: () => setNightMode(true),
+    },
+    {
+      command: 'Mode jour',
+      callback: () => setNightMode(false),
+    },
     {
       command: ['Affiche la vue :viewName'],
       callback: async (viewName: string) => {
@@ -160,7 +168,8 @@ export default function Modules({
         className={clsx(
           'modules-container',
           process.env.NODE_ENV !== 'production' &&
-            '!w-[1080px] !h-[1920px] border border-white'
+            '!w-[1080px] !h-[1920px] border border-white',
+          nightMode && 'opacity-15'
         )}
       >
         {draftModule && displayCreateModule && (
