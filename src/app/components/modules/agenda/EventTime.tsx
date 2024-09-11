@@ -9,12 +9,12 @@ export default function EventTime({
   endTime,
 }: EventTimeProps) {
   return (
-    <div className="event-time text-xs leading-none p-1 border-r-2 flex items-center w-10 justify-center">
+    <div className="event-time text-xs leading-none border-r-2 flex items-center min-w-[3em] justify-between flex-col flex-wrap text-[0.5em] my-1">
       {type === 'timespan' && startTime && endTime ? (
         <>
-          {date2Time(startTime)}
+          <div>{date2Time(startTime)}</div>
           <br />
-          {date2Time(endTime)}
+          <div>{date2Time(endTime)}</div>
         </>
       ) : (
         <FontAwesomeIcon icon={faCalendarDay} size="2x" />

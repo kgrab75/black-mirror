@@ -12,7 +12,7 @@ export default function MonthItem({
   return (
     <div className="month">
       <div className="month-name text-center capitalize">{monthName}</div>
-      <div className="days">
+      <div className="days" style={{ fontSize: '0.8em' }}>
         {eventsByDay.map((day) => (
           <DayItem key={day.date} date={day.date} events={day.events} />
         ))}

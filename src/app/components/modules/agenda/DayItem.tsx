@@ -9,8 +9,10 @@ export default function DayItem({ date, events }: DayItemProps) {
     <div
       className={`day flex border-b ${isToday && 'bg-blue-400 bg-opacity-40'}`}
     >
-      <div className="flex items-center text-center bg-white bg-opacity-20 leading-none text-base rounded-br-3xl mr-1 h-9 max-w-11 p-1">
-        {date2Day(date)}
+      <div className="flex items-center text-center bg-white bg-opacity-20 leading-none text-[0.5em] rounded-br-[100%] h-[3em] max-w-[3em] p-1">
+        <div className="relative -top-[0.3em] -left-[0.1em]">
+          {date2Day(date)}
+        </div>
       </div>
       <div className="events w-full">
         {events.map((event, index) => (

@@ -8,10 +8,12 @@ import { date2String, parseDate } from '@/app/lib/utils/date';
 import { addDays, addWeeks, endOfWeek, isToday, startOfWeek } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Event } from 'nylas';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
+import TextFit from '../TextFit';
 
 export default function Agenda(props: AgendaProps) {
+  const ref = useRef(null);
   const [redirectUri, setRedirectUri] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +104,7 @@ export default function Agenda(props: AgendaProps) {
   const eventsByMonth = groupByMonth(groupByDay(events));
 
   return (
-    <div className="relative size-full px-1">
+    <div className="relative size-full px-1" ref={ref}>
       {loading ? (
         <Loader />
       ) : (
@@ -110,7 +112,9 @@ export default function Agenda(props: AgendaProps) {
           {redirectUri ? (
             <button onClick={handleAuth}>Authenticate</button>
           ) : (
-            <EventsList eventsByMonth={eventsByMonth} />
+            <TextFit widthFactor={0.1} heightFactor={0.4} refParent={ref}>
+              <EventsList eventsByMonth={eventsByMonth} />
+            </TextFit>
           )}
         </>
       )}
