@@ -135,7 +135,7 @@ export default function Lists(props: ListsProps) {
     };
 
     fetchAllLists();
-    const interval = setInterval(() => fetchAllLists(), 60 * 60 * 1000);
+    const interval = setInterval(() => fetchAllLists(), 60 * 1000);
     return () => clearInterval(interval);
   }, [loading, currentListUuid]);
 
