@@ -13,6 +13,7 @@ import useNotification from '@/app/hooks/useNotification';
 import useViews from '@/app/hooks/useViews';
 import { Module as ModuleType } from '@/app/lib/definitions';
 import { getDraftModule, stringToNumber } from '@/app/lib/utils';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -155,7 +156,13 @@ export default function Modules({
 
   return (
     <>
-      <div className="modules-container">
+      <div
+        className={clsx(
+          'modules-container',
+          process.env.NODE_ENV !== 'production' &&
+            '!w-[1080px] !h-[1920px] border border-white'
+        )}
+      >
         {draftModule && displayCreateModule && (
           <UpsertModule draft={draftModule} newModule={newModule} />
         )}
