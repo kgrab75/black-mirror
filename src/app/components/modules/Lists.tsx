@@ -5,8 +5,9 @@ import { updateModule } from '@/app/lib/actions';
 import { ListsProps } from '@/app/lib/definitions';
 import { ensure } from '@/app/lib/utils';
 import { sentenceCase } from 'change-case';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
+import TextFit from '../TextFit';
 
 interface List {
   listUuid: string;
@@ -21,6 +22,7 @@ interface Item {
 }
 
 export default function Lists(props: ListsProps) {
+  const ref = useRef(null);
   const [loading, setLoading] = useState(true);
   const [displayListOfLists, setDisplayListOfLists] = useState(false);
   const [lists, setLists] = useState<List[]>([]);
@@ -153,73 +155,77 @@ export default function Lists(props: ListsProps) {
     : '0px';
 
   return (
-    <div className="relative size-full px-1">
+    <div className="relative size-full px-1" ref={ref}>
       {/* <button onClick={handleAdd}>Add Floor</button> */}
 
       {loading ? (
         <Loader />
       ) : (
-        <div className="flex relative size-full">
-          <div
-            className="size-full absolute transition ease-in-out duration-500"
-            style={{ transform: `translateX(${rightPosFirstColumn})` }}
-          >
-            <ul className="">
-              {lists.map((list) => (
-                <li key={list.listUuid}>
-                  {list.name}{' '}
-                  {list.items.length > 0 && (
-                    <span className="inline-flex items-center justify-center w-4 h-4 text-xs font-semibold text-black bg-white rounded-full align-[3px]">
-                      {list.items.length}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div
-            className="size-full absolute transition ease-in-out duration-500"
-            style={{ transform: `translateX(${rightPosSecondColumn})` }}
-          >
-            <div className="border-2 mx-auto w-fit px-2 rounded-t-lg bg-slate-600 z-10 relative">
-              {getList(currentListUuid).name}
+        <TextFit widthFactor={0.1} heightFactor={0.4} refParent={ref}>
+          <div className="flex relative size-full">
+            <div
+              className="size-full absolute transition ease-in-out duration-500"
+              style={{ transform: `translateX(${rightPosFirstColumn})` }}
+            >
+              <ul className="">
+                {lists.map((list) => (
+                  <li key={list.listUuid}>
+                    {list.name}{' '}
+                    {list.items.length > 0 && (
+                      <span className="inline-flex items-center justify-center w-4 h-4 text-xs font-semibold text-black bg-white rounded-full align-[3px]">
+                        {list.items.length}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="border-2 h-[calc(100%-1em)] -top-[1em] relative rounded-lg">
-              <div className="border h-[inherit] mx-4 my-2 bg-white bg-opacity-10">
-                <ul className="px-2 absolute w-[calc(100%-2rem-2px)] top-[7px] overflow-hidden h-[inherit]">
-                  {Array.from({ length: 5 * props.height }).map((_, index) => (
-                    <li
-                      key={index}
-                      className="border-b border-dashed border-opacity-50 border-white -mb-px"
-                    >
-                      &nbsp;
-                    </li>
-                  ))}
-                </ul>
-                <ul className="px-2 py-1">
-                  {getList(currentListUuid).items.map((item, index) => (
-                    <li
-                      key={item.name}
-                      className={`transition ease-in-out duration-750`} //border-b border-dashed
-                      style={{
-                        transform: `translateY(${
-                          index < nbLoadItems
-                            ? '0'
-                            : `calc(${(100 / 12) * props.height}vh - ${
-                                nbLoadItems * 30
-                              }px)`
-                        })`,
-                      }}
-                    >
-                      {item.name}
-                    </li>
-                  ))}
-                </ul>
+
+            <div
+              className="size-full absolute transition ease-in-out duration-500"
+              style={{ transform: `translateX(${rightPosSecondColumn})` }}
+            >
+              <div className="border-2 mx-auto w-fit px-2 rounded-t-lg bg-slate-600 z-10 relative">
+                {getList(currentListUuid).name}
+              </div>
+              <div className="border-2 h-[calc(100%-1em)] -top-[0.9em] relative rounded-lg">
+                <div className="border h-[inherit] mx-4 my-4 bg-white bg-opacity-10">
+                  <ul className="px-2 absolute w-[calc(100%-2rem-2px)] top-[0.7rem] overflow-hidden h-[inherit] leading-tight">
+                    {Array.from({ length: 5 * props.height }).map(
+                      (_, index) => (
+                        <li
+                          key={index}
+                          className="border-b border-dashed border-opacity-50 border-white -mb-px"
+                        >
+                          &nbsp;
+                        </li>
+                      )
+                    )}
+                  </ul>
+                  <ul className="px-2 py-1 leading-tight">
+                    {getList(currentListUuid).items.map((item, index) => (
+                      <li
+                        key={item.name}
+                        className={`transition ease-in-out duration-750`} //border-b border-dashed
+                        style={{
+                          transform: `translateY(${
+                            index < nbLoadItems
+                              ? '0'
+                              : `calc(${(100 / 12) * props.height}vh - ${
+                                  nbLoadItems * 30
+                                }px)`
+                          })`,
+                        }}
+                      >
+                        {item.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </TextFit>
       )}
     </div>
   );

@@ -34,5 +34,5 @@ export default function TextFit({
     setFontSize(Math.round(calculatedFontSize));
   }, [dimensions, widthFactor, heightFactor]);
 
-  return <div style={{ fontSize }}>{children}</div>;
+  return <div style={{ fontSize, height: 'inherit' }}>{children}</div>;
 }
