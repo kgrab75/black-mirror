@@ -143,7 +143,18 @@ export default function Modules({
   ];
 
   useSpeechRecognition({
-    commands: isEditing ? commands : [],
+    commands: isEditing
+      ? commands
+      : [
+          {
+            command: 'Mode nuit',
+            callback: () => setNightMode(true),
+          },
+          {
+            command: 'Mode jour',
+            callback: () => setNightMode(false),
+          },
+        ],
   });
 
   SpeechRecognition.startListening({ continuous: true });
