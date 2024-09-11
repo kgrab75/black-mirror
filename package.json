@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "telemetry_off": "next telemetry --disable",
+    "telemetry_on": "next telemetry --enable"
   },
   "dependencies": {
     "@atombrenner/openmeteo": "^0.2.0",
