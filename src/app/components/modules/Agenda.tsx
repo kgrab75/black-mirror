@@ -3,9 +3,17 @@
 import Loader from '@/app/components/Loader';
 import EventsList from '@/app/components/modules/agenda/EventsList';
 import { AgendaProps } from '@/app/lib/definitions';
+import { stringToNumber } from '@/app/lib/utils';
 import { groupByDay, groupByMonth } from '@/app/lib/utils/agenda';
 import { date2String, parseDate } from '@/app/lib/utils/date';
-import { addDays, addWeeks, endOfWeek, isToday, startOfWeek } from 'date-fns';
+import {
+  addDays,
+  addWeeks,
+  endOfWeek,
+  isToday,
+  startOfWeek,
+  subWeeks,
+} from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Event } from 'nylas';
 import { useEffect, useRef, useState } from 'react';
@@ -16,11 +24,27 @@ export default function Agenda(props: AgendaProps) {
   const ref = useRef(null);
   const [redirectUri, setRedirectUri] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
+  const [weeksToShow, setWeeksToShow] = useState(2);
   const [loading, setLoading] = useState(true);
   const [displayDate, setDisplayDate] = useState(new Date());
 
   useSpeechRecognition({
     commands: [
+      {
+        command: [
+          '(Affiche) :weeksToShow semaine',
+          '(Affiche) :weeksToShow semaines',
+        ],
+        callback: (weeksToShow) => {
+          setWeeksToShow(stringToNumber(weeksToShow));
+        },
+      },
+      {
+        command: ['(Affiche la) semaine précédente'],
+        callback: () => {
+          setDisplayDate(subWeeks(displayDate, 1));
+        },
+      },
       {
         command: ['(Affiche la) semaine suivante'],
         callback: () => {
@@ -28,7 +52,11 @@ export default function Agenda(props: AgendaProps) {
         },
       },
       {
-        command: ["(Affiche le) planning d'aujourd'hui"],
+        command: [
+          "(Affiche le) planning d'aujourd'hui",
+          '(Affiche la) semaine courante',
+          '(Affiche la) semaine actuelle',
+        ],
         callback: () => {
           setDisplayDate(new Date());
         },
@@ -68,7 +96,9 @@ export default function Agenda(props: AgendaProps) {
         const startDate = isToday(displayDate)
           ? displayDate
           : startOfWeek(displayDate, { locale: fr });
-        const endDate = endOfWeek(displayDate, { locale: fr });
+        const endDate = endOfWeek(addWeeks(displayDate, weeksToShow - 1), {
+          locale: fr,
+        });
 
         const start = date2String(
           addDays(startDate, isToday(displayDate) ? 0 : 1)
@@ -82,7 +112,7 @@ export default function Agenda(props: AgendaProps) {
           }
         );
         const { events } = await response.json();
-        setEvents(events);
+        setEvents(events || []);
       } catch (error) {
         console.error('Error fetching events:', error);
       } finally {
@@ -95,7 +125,7 @@ export default function Agenda(props: AgendaProps) {
     } else {
       getEvents();
     }
-  }, [displayDate, id, grantId]);
+  }, [displayDate, id, grantId, weeksToShow]);
 
   const handleAuth = () => {
     window.location.href = redirectUri;
