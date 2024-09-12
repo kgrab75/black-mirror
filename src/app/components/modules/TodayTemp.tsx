@@ -41,7 +41,7 @@ export default function TodayTemp(props: ModuleProps) {
       {error ? (
         <div>{error}</div>
       ) : (
-        <TextFit widthFactor={0.3} heightFactor={0.4} refParent={ref}>
+        <TextFit widthFactor={0.25} heightFactor={0.4} refParent={ref}>
           <TempInfo {...temperatureWeatherDatas} />
         </TextFit>
       )}
