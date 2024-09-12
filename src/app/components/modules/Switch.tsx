@@ -7,9 +7,11 @@ import { faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useRef, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
+import Loader from '../Loader';
 
 export default function Switch(props: ModuleProps) {
   const ref = useRef(null);
+  const [loading, setLoading] = useState(false);
   const [lightState, setLightState] = useState('off');
   const [animate, setAnimate] = useState(false);
 
@@ -62,6 +64,7 @@ export default function Switch(props: ModuleProps) {
 
   const handleLightToggle = async (newState: 'on' | 'off', room: string) => {
     try {
+      setLoading(true);
       const response = await fetch(
         `/api/light?state=${newState}&room=${room}`,
         {
@@ -78,6 +81,7 @@ export default function Switch(props: ModuleProps) {
         const errorData = await response.json();
         console.error('Error toggling the light:', errorData.message);
       }
+      setLoading(false);
     } catch (error) {
       console.error('Network error:', error);
     }
@@ -86,6 +90,11 @@ export default function Switch(props: ModuleProps) {
   return (
     <div className="px-2 h-full">
       <div className="w-full h-full flex items-center justify-center">
+        {loading && (
+          <div className="opacity-30">
+            <Loader />
+          </div>
+        )}
         <div
           className="flex justify-center items-center flex-col h-full w-full"
           ref={ref}
