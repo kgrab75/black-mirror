@@ -9,6 +9,7 @@ import {
 import Module from '@/app/components/Module';
 import UpsertModule from '@/app/components/UpsertModule';
 import useModules from '@/app/hooks/useModules';
+import useNightMode from '@/app/hooks/useNightMode';
 import useNotification from '@/app/hooks/useNotification';
 import useViews from '@/app/hooks/useViews';
 import { Module as ModuleType } from '@/app/lib/definitions';
@@ -29,16 +30,36 @@ export default function Modules({
   const { modules, setModules } = useModules();
   const { views } = useViews();
   const [newModule, setNewModule] = useState(false);
-  const [nightMode, setNightMode] = useState(false);
   const [displayCreateModule, setDisplayCreateModule] = useState(false);
   const draftModule = getDraftModule(modules);
   const { showNotification } = useNotification();
+  const { nightMode, setNightMode, setManualOverride } = useNightMode(
+    '00:00:00',
+    '06:30:00'
+  );
 
   useEffect(() => {
     setDisplayCreateModule(draftModule !== null);
   }, [modules, draftModule]);
 
-  const commands = [
+  const defaultCommands = [
+    {
+      command: 'Mode nuit',
+      callback: () => {
+        setNightMode(true);
+        setManualOverride(true);
+      },
+    },
+    {
+      command: 'Mode jour',
+      callback: () => {
+        setNightMode(false);
+        setManualOverride(true);
+      },
+    },
+  ];
+
+  const editModeCommands = [
     {
       command: ['Nouveau module', 'Rajoute un (nouveau) module'],
       callback: async () => {
@@ -121,14 +142,6 @@ export default function Modules({
       },
     },
     {
-      command: 'Mode nuit',
-      callback: () => setNightMode(true),
-    },
-    {
-      command: 'Mode jour',
-      callback: () => setNightMode(false),
-    },
-    {
       command: ['Affiche la vue :viewName'],
       callback: async (viewName: string) => {
         const selectedView = views.find(
@@ -144,17 +157,8 @@ export default function Modules({
 
   useSpeechRecognition({
     commands: isEditing
-      ? commands
-      : [
-          {
-            command: 'Mode nuit',
-            callback: () => setNightMode(true),
-          },
-          {
-            command: 'Mode jour',
-            callback: () => setNightMode(false),
-          },
-        ],
+      ? [...defaultCommands, ...editModeCommands]
+      : defaultCommands,
   });
 
   SpeechRecognition.startListening({ continuous: true });
