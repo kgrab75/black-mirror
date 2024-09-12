@@ -122,7 +122,7 @@ export default function Lists(props: ListsProps) {
       });
       const { lists }: { lists: List[] } = await response.json();
 
-      setLists(lists);
+      setLists(lists || []);
       if (!currentListUuid) {
         setCurrentListUuid(lists[0].listUuid);
         return;
@@ -135,7 +135,7 @@ export default function Lists(props: ListsProps) {
     };
 
     fetchAllLists();
-    const interval = setInterval(() => fetchAllLists(), 60 * 1000);
+    const interval = setInterval(() => fetchAllLists(), 2 * 60 * 1000);
     return () => clearInterval(interval);
   }, [loading, currentListUuid]);
 
