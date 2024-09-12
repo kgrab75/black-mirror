@@ -21,11 +21,20 @@ interface Item {
   name: string;
 }
 
+const defaultLists: List[] = [
+  {
+    listUuid: 'fake_uuid',
+    name: 'Liste',
+    theme: 'Groceries',
+    items: [],
+  },
+];
+
 export default function Lists(props: ListsProps) {
   const ref = useRef(null);
   const [loading, setLoading] = useState(true);
   const [displayListOfLists, setDisplayListOfLists] = useState(false);
-  const [lists, setLists] = useState<List[]>([]);
+  const [lists, setLists] = useState<List[]>(defaultLists);
   const [currentListUuid, setCurrentListUuid] = useState(
     props.options?.currentListUuid || ''
   );
@@ -122,7 +131,7 @@ export default function Lists(props: ListsProps) {
       });
       const { lists }: { lists: List[] } = await response.json();
 
-      setLists(lists || []);
+      setLists(lists || defaultLists);
       if (!currentListUuid) {
         setCurrentListUuid(lists[0].listUuid);
         return;
