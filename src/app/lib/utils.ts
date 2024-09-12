@@ -98,8 +98,8 @@ export function type2label(type: 'string'): string {
   return ensure(moduleDetails.find((module) => module.type === type)?.labels[0]);
 }
 
-export function label2type(label: string): string {
-  return ensure(moduleDetails.find((module) => module.labels.includes(label.toLocaleLowerCase()))?.type);
+export function label2type(label: string): string | undefined {
+  return moduleDetails.find((module) => module.labels.includes(label.toLocaleLowerCase()))?.type;
 }
 
 export function labelExists(label: string) {

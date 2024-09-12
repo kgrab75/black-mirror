@@ -4,7 +4,9 @@ import {
   createModule,
   deleteIsPendingDeletionModules,
   updateAllModules,
+  updateAllViews,
   updateModule,
+  updateView,
 } from '@/app//lib/actions';
 import Module from '@/app/components/Module';
 import UpsertModule from '@/app/components/UpsertModule';
@@ -28,7 +30,7 @@ export default function Modules({
   displayInView: boolean;
 }) {
   const { modules, setModules } = useModules();
-  const { views } = useViews();
+  const { views, setViews } = useViews();
   const [newModule, setNewModule] = useState(false);
   const [displayCreateModule, setDisplayCreateModule] = useState(false);
   const draftModule = getDraftModule(modules);
@@ -43,6 +45,23 @@ export default function Modules({
   }, [modules, draftModule]);
 
   const defaultCommands = [
+    {
+      command: ['Affiche la vue :viewName'],
+      callback: async (viewName: string) => {
+        const searchViewIndex = views.findIndex(
+          (view) => view.name.toLowerCase() === viewName.toLowerCase()
+        );
+
+        if (views[searchViewIndex]) {
+          await updateAllViews({ current: false });
+          const updatedViews = await updateView(views[searchViewIndex].id, {
+            current: true,
+          });
+          setViews(updatedViews);
+          setModules(views[searchViewIndex].modules);
+        }
+      },
+    },
     {
       command: 'Mode nuit',
       callback: () => {
@@ -138,18 +157,6 @@ export default function Modules({
               isPendingDeletion: false,
             })
           );
-        }
-      },
-    },
-    {
-      command: ['Affiche la vue :viewName'],
-      callback: async (viewName: string) => {
-        const selectedView = views.find(
-          (view) => view.name.toLowerCase() === viewName.toLowerCase()
-        );
-
-        if (selectedView) {
-          setModules(selectedView.modules);
         }
       },
     },

@@ -60,7 +60,10 @@ export default function SelectModuleType({ draft }: { draft: Module }) {
 
   function selectModuleFromLabel(moduleLabel: string) {
     if (labelExists(moduleLabel)) {
-      selectModule(label2type(moduleLabel));
+      const type = label2type(moduleLabel);
+      if (type !== undefined) {
+        selectModule(type);
+      }
     } else {
       showNotification(`Le module ${moduleLabel} n'existe pas`);
     }

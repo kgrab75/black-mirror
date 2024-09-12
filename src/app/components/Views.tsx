@@ -126,7 +126,12 @@ export default function Views() {
         },
       },
       {
-        command: ['Renomme la vue (en) :viewName'],
+        command: [
+          'Renomme la vue (en) :viewName',
+          'Nomme la vue (en) :viewName',
+          'Renomme cette vue (en) :viewName',
+          'Nomme cette vue (en) :viewName',
+        ],
         callback: async (viewName: string) => {
           const selectedView = views.find((view) => view.current);
 

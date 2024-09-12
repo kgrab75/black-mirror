@@ -9,7 +9,7 @@ type Data = {
 
 const defaultData: Data = {
   views: [{
-    "name": "Météo",
+    "name": "principale",
     "id": 1,
     "current": true,
     "modules": []
