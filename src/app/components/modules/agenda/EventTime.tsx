@@ -9,7 +9,7 @@ export default function EventTime({
   endTime,
 }: EventTimeProps) {
   return (
-    <div className="event-time text-xs leading-none border-r-2 flex items-center min-w-[3em] justify-between flex-col flex-wrap text-[0.5em] my-1">
+    <div className="event-time leading-none border-r-2 flex items-center min-w-[3em] justify-between flex-col flex-wrap text-[0.5em] my-1">
       {type === 'timespan' && startTime && endTime ? (
         <>
           <div>{date2Time(startTime)}</div>
@@ -17,7 +17,9 @@ export default function EventTime({
           <div>{date2Time(endTime)}</div>
         </>
       ) : (
-        <FontAwesomeIcon icon={faCalendarDay} size="2x" />
+        <div className="flex justify-center h-full flex-col">
+          <FontAwesomeIcon icon={faCalendarDay} size="2x" />
+        </div>
       )}
     </div>
   );
