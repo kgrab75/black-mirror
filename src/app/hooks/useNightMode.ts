@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
 
 const isWithinTimeRange = (startTime: Date, endTime: Date) => {
+  const extractTime = (date: Date) => {
+    return date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+  };
   const now = new Date();
-  if (startTime <= endTime) {
-    return now >= startTime && now <= endTime;
+
+  const startInSeconds = extractTime(startTime);
+  const endInSeconds = extractTime(endTime);
+  const nowInSeconds = extractTime(now);
+
+  if (startInSeconds <= endInSeconds) {
+    return nowInSeconds >= startInSeconds && nowInSeconds <= endInSeconds;
   } else {
-    return now >= startTime || now <= endTime;
+    return nowInSeconds >= startInSeconds || nowInSeconds <= endInSeconds;
   }
 };
 
