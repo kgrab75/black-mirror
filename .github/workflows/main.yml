@@ -79,3 +79,13 @@ jobs:
     steps:
       - name: Update Black Mirror
         run: /home/kgr/update_black_mirror.sh
+
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notification to PushBullet
+        uses: ShaunLWM/action-pushbullet@master
+        env:
+          PB_TOKEN: ${{ secrets.PB_TOKEN }}
+          PB_TITLE: Black Mirror
+          PB_TEXT: Black Mirror is released.
