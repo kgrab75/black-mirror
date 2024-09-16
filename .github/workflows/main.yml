@@ -55,6 +55,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/arm64
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache
+          cache-to: type=inline
           build-args: |
             BASE_URL=${{ secrets.BASE_URL }}
             NEXT_PUBLIC_OPEN_WEATHER_API_KEY=${{ secrets.NEXT_PUBLIC_OPEN_WEATHER_API_KEY }}
@@ -72,6 +74,7 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+          
   deploy-and-run-image:
     runs-on: self-hosted
     needs: build-and-push-image
