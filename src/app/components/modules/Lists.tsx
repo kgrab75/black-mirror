@@ -21,14 +21,14 @@ interface Item {
   name: string;
 }
 
-const defaultLists: List[] = [
-  {
-    listUuid: 'fake_uuid',
-    name: 'Liste',
-    theme: 'Groceries',
-    items: [],
-  },
-];
+const defaultList: List = {
+  listUuid: 'fake_uuid',
+  name: 'Liste',
+  theme: 'Groceries',
+  items: [],
+};
+
+const defaultLists: List[] = [defaultList];
 
 export default function Lists(props: ListsProps) {
   const ref = useRef(null);
@@ -148,8 +148,13 @@ export default function Lists(props: ListsProps) {
     return () => clearInterval(interval);
   }, [loading, currentListUuid]);
 
-  const getList = (listUuid: string): List =>
-    ensure(lists.find((list) => list.listUuid === listUuid));
+  const getList = (listUuid: string): List => {
+    const list = lists.find((list) => list.listUuid === listUuid);
+    if (list === undefined) {
+      return defaultList;
+    }
+    return list;
+  };
 
   const getListUuid = (listName: string): string =>
     ensure(
