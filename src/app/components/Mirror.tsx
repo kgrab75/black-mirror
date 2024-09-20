@@ -13,7 +13,7 @@ import useViews from '@/app/hooks/useViews';
 import { Module, WeatherLocation } from '@/app/lib/definitions';
 import { ensure } from '@/app/lib/utils';
 import Pusher from 'pusher-js';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
 
 function extractWeatherLocation(modules: Module[]): WeatherLocation | null {
@@ -41,10 +41,17 @@ export default function Mirror() {
     cluster: 'eu',
   });
 
-  const channel = pusher.subscribe('black-mirror');
-  channel.bind('deployed', () => {
-    location.reload();
-  });
+  useEffect(() => {
+    const channel = pusher.subscribe('black-mirror');
+    channel.bind('deployed', () => {
+      location.reload();
+    });
+
+    return () => {
+      channel.unbind('deployed');
+      pusher.unsubscribe('black-mirror');
+    };
+  }, []);
 
   useSpeechRecognition({
     commands: [
