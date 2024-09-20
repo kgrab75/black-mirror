@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition';
+import { convertToSeconds } from '../lib/utils/date';
 import LoadingBar from './LoadingBar';
 
 export default function Modules({
@@ -27,11 +28,14 @@ export default function Modules({
   isEditing: boolean;
   displayInView: boolean;
 }) {
-  const loadingBarDuration = 30;
+  const defaultLoadingBarDuration = 30;
   const { modules, setModules } = useModules();
   const { views, setViews } = useViews();
   const [newModule, setNewModule] = useState(false);
   const [displayLoadingBar, setDisplayLoadingBar] = useState(false);
+  const [durationLoadingBar, setDurationLoadingBar] = useState(
+    defaultLoadingBarDuration,
+  );
   const [displayCreateModule, setDisplayCreateModule] = useState(false);
   const draftModule = getDraftModule(modules);
   const { showNotification } = useNotification();
@@ -46,19 +50,35 @@ export default function Modules({
 
   const defaultCommands = [
     {
-      command: ['Affiche la vue :viewName', 'vue :viewName', 'vu :viewName'],
-      callback: async (viewName: string) => {
+      command: [
+        'Affiche la vue :viewName',
+        'vue :viewName',
+        'vu :viewName',
+        'vu :viewName pendant *',
+        'vue :viewName pendant *',
+      ],
+      callback: async (
+        viewName: string,
+        duration: { command: string } | string,
+      ) => {
         const searchViewIndex = views.findIndex(
           (view) => view.name.toLowerCase() === viewName.toLowerCase(),
         );
         const defaultViewIndex = views.findIndex((view) => view.current);
 
         if (views[searchViewIndex]) {
+          const durationInSecond =
+            typeof duration === 'string'
+              ? convertToSeconds(duration) || defaultLoadingBarDuration
+              : defaultLoadingBarDuration;
+
+          setDurationLoadingBar(durationInSecond);
           setDisplayLoadingBar(true);
           setModules(views[searchViewIndex].modules);
           setTimeout(() => {
             setModules(views[defaultViewIndex].modules);
-          }, loadingBarDuration * 1000);
+            setDisplayLoadingBar(false);
+          }, durationInSecond * 1000);
         }
       },
     },
@@ -172,7 +192,7 @@ export default function Modules({
 
   return (
     <>
-      {displayLoadingBar && <LoadingBar duration={loadingBarDuration} />}
+      {displayLoadingBar && <LoadingBar duration={durationLoadingBar} />}
       <div
         className={clsx(
           'modules-container',
