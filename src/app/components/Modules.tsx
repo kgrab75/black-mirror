@@ -4,9 +4,7 @@ import {
   createModule,
   deleteIsPendingDeletionModules,
   updateAllModules,
-  updateAllViews,
   updateModule,
-  updateView,
 } from '@/app//lib/actions';
 import Module from '@/app/components/Module';
 import UpsertModule from '@/app/components/UpsertModule';
@@ -14,13 +12,13 @@ import useModules from '@/app/hooks/useModules';
 import useNightMode from '@/app/hooks/useNightMode';
 import useNotification from '@/app/hooks/useNotification';
 import useViews from '@/app/hooks/useViews';
-import { Module as ModuleType } from '@/app/lib/definitions';
 import { getDraftModule, stringToNumber } from '@/app/lib/utils';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition';
+import LoadingBar from './LoadingBar';
 
 export default function Modules({
   isEditing,
@@ -29,15 +27,17 @@ export default function Modules({
   isEditing: boolean;
   displayInView: boolean;
 }) {
+  const loadingBarDuration = 30;
   const { modules, setModules } = useModules();
   const { views, setViews } = useViews();
   const [newModule, setNewModule] = useState(false);
+  const [displayLoadingBar, setDisplayLoadingBar] = useState(false);
   const [displayCreateModule, setDisplayCreateModule] = useState(false);
   const draftModule = getDraftModule(modules);
   const { showNotification } = useNotification();
   const { nightMode, setNightMode, setManualOverride } = useNightMode(
     '00:00:00',
-    '06:30:00'
+    '06:30:00',
   );
 
   useEffect(() => {
@@ -46,19 +46,19 @@ export default function Modules({
 
   const defaultCommands = [
     {
-      command: ['Affiche la vue :viewName'],
+      command: ['Affiche la vue :viewName', 'vue :viewName', 'vu :viewName'],
       callback: async (viewName: string) => {
         const searchViewIndex = views.findIndex(
-          (view) => view.name.toLowerCase() === viewName.toLowerCase()
+          (view) => view.name.toLowerCase() === viewName.toLowerCase(),
         );
+        const defaultViewIndex = views.findIndex((view) => view.current);
 
         if (views[searchViewIndex]) {
-          await updateAllViews({ current: false });
-          const updatedViews = await updateView(views[searchViewIndex].id, {
-            current: true,
-          });
-          setViews(updatedViews);
+          setDisplayLoadingBar(true);
           setModules(views[searchViewIndex].modules);
+          setTimeout(() => {
+            setModules(views[defaultViewIndex].modules);
+          }, loadingBarDuration * 1000);
         }
       },
     },
@@ -100,7 +100,7 @@ export default function Modules({
               display: true,
               temporaryType: 'Draft',
               options: {},
-            })
+            }),
           );
         }
 
@@ -131,12 +131,12 @@ export default function Modules({
       ],
       callback: async (id: number) => {
         showNotification(
-          `Dis "supprimer" pour confirmer la suppresion du module ${id}. Sinon, dis "annuler"`
+          `Dis "supprimer" pour confirmer la suppresion du module ${id}. Sinon, dis "annuler"`,
         );
         setModules(
           await updateModule(stringToNumber(id), {
             isPendingDeletion: true,
-          })
+          }),
         );
       },
     },
@@ -155,7 +155,7 @@ export default function Modules({
           setModules(
             await updateAllModules({
               isPendingDeletion: false,
-            })
+            }),
           );
         }
       },
@@ -170,28 +170,15 @@ export default function Modules({
 
   SpeechRecognition.startListening({ continuous: true });
 
-  type TypeCounts = {
-    [key: string]: number;
-  };
-
-  const typeCounts: TypeCounts = modules.reduce(
-    (acc: TypeCounts, module: ModuleType) => {
-      if (module.visible) {
-        acc[module.type] = (acc[module.type] || 0) + 1;
-      }
-      return acc;
-    },
-    {}
-  );
-
   return (
     <>
+      {displayLoadingBar && <LoadingBar duration={loadingBarDuration} />}
       <div
         className={clsx(
           'modules-container',
           process.env.NODE_ENV !== 'production' &&
             '!w-[1080px] !h-[1920px] border border-white',
-          nightMode && 'opacity-15'
+          nightMode && 'opacity-15',
         )}
       >
         {draftModule && displayCreateModule && (
@@ -201,10 +188,9 @@ export default function Modules({
           return (
             module.display && (
               <Module
-                key={module.id}
+                key={`${module.type}-${module.id}`}
                 {...module}
                 isEditing={isEditing}
-                isUniq={typeCounts[module.type] === 1}
                 displayInView={displayInView}
               />
             )

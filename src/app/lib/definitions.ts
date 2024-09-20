@@ -27,7 +27,6 @@ export interface ModuleProps {
     visible: boolean;
     display: boolean;
     isPendingDeletion?: boolean;
-    isUniq?: boolean;
     temporaryType: string;
     isEditing?: boolean;
     displayInView?: boolean;

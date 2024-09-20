@@ -36,7 +36,7 @@ export default function Lists(props: ListsProps) {
   const [displayListOfLists, setDisplayListOfLists] = useState(false);
   const [lists, setLists] = useState<List[]>(defaultLists);
   const [currentListUuid, setCurrentListUuid] = useState(
-    props.options?.currentListUuid || ''
+    props.options?.currentListUuid || '',
   );
   const [nbLoadItems, setNbLoadItems] = useState(0);
 
@@ -75,7 +75,7 @@ export default function Lists(props: ListsProps) {
             `/api/bring?listUuid=${currentListUuid}&itemName=${name}`,
             {
               method: 'POST',
-            }
+            },
           );
 
           setLists(
@@ -87,7 +87,7 @@ export default function Lists(props: ListsProps) {
                 };
               }
               return list;
-            })
+            }),
           );
 
           setTimeout(() => setNbLoadItems(nbLoadItems + 1), 100);
@@ -104,7 +104,7 @@ export default function Lists(props: ListsProps) {
               `/api/bring?listUuid=${currentListUuid}&itemName=${name}`,
               {
                 method: 'DELETE',
-              }
+              },
             );
 
             setLists(
@@ -116,7 +116,7 @@ export default function Lists(props: ListsProps) {
                   };
                 }
                 return list;
-              })
+              }),
             );
           }
         },
@@ -138,7 +138,7 @@ export default function Lists(props: ListsProps) {
       }
       setNbLoadItems(
         ensure(lists.find((list) => list.listUuid === currentListUuid)).items
-          .length
+          .length,
       );
       setLoading(false);
     };
@@ -158,7 +158,7 @@ export default function Lists(props: ListsProps) {
 
   const getListUuid = (listName: string): string =>
     ensure(
-      lists.find((list) => list.name.toLowerCase() === listName.toLowerCase())
+      lists.find((list) => list.name.toLowerCase() === listName.toLowerCase()),
     ).listUuid;
 
   const rightPosFirstColumn = displayListOfLists
@@ -213,7 +213,7 @@ export default function Lists(props: ListsProps) {
                         >
                           &nbsp;
                         </li>
-                      )
+                      ),
                     )}
                   </ul>
                   <ul className="px-2 py-1 leading-tight">

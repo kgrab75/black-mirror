@@ -73,6 +73,7 @@ export default function Agenda(props: AgendaProps) {
 
   const id = props.id;
   const grantId = props.options?.grantId;
+  const calendarId = props.options?.primaryCalendar.id;
 
   useEffect(() => {
     const getRedirectURI = async () => {
@@ -89,7 +90,7 @@ export default function Agenda(props: AgendaProps) {
       }
     };
 
-    const getEvents = async (displayLoading=true) => {
+    const getEvents = async (displayLoading = true) => {
       try {
         displayLoading && setLoading(true);
 
@@ -101,15 +102,15 @@ export default function Agenda(props: AgendaProps) {
         });
 
         const start = date2String(
-          addDays(startDate, isToday(displayDate) ? 0 : 1)
+          addDays(startDate, isToday(displayDate) ? 0 : 1),
         );
         const end = date2String(addDays(endDate, 1));
 
         const response = await fetch(
-          `/api/nylas/events?moduleId=${id}&start=${start}&end=${end}`,
+          `/api/nylas/events?identifier=${grantId}&calendarId=${calendarId}&start=${start}&end=${end}`,
           {
             method: 'GET',
-          }
+          },
         );
         const { events } = await response.json();
         setEvents(events || []);
@@ -126,9 +127,8 @@ export default function Agenda(props: AgendaProps) {
       getEvents();
       const interval = setInterval(() => getEvents(false), 5 * 60 * 1000);
       return () => clearInterval(interval);
-    }   
-    
-  }, [displayDate, id, grantId, weeksToShow]);
+    }
+  }, [displayDate, id, grantId, calendarId, weeksToShow]);
 
   const handleAuth = () => {
     window.location.href = redirectUri;
