@@ -89,9 +89,9 @@ export default function Agenda(props: AgendaProps) {
       }
     };
 
-    const getEvents = async () => {
+    const getEvents = async (displayLoading=true) => {
       try {
-        setLoading(true);
+        displayLoading && setLoading(true);
 
         const startDate = isToday(displayDate)
           ? displayDate
@@ -124,7 +124,10 @@ export default function Agenda(props: AgendaProps) {
       getRedirectURI();
     } else {
       getEvents();
-    }
+      const interval = setInterval(() => getEvents(false), 5 * 60 * 1000);
+      return () => clearInterval(interval);
+    }   
+    
   }, [displayDate, id, grantId, weeksToShow]);
 
   const handleAuth = () => {
