@@ -12,6 +12,7 @@ import useModules from '@/app/hooks/useModules';
 import useViews from '@/app/hooks/useViews';
 import { Module, WeatherLocation } from '@/app/lib/definitions';
 import { ensure } from '@/app/lib/utils';
+import Pusher from 'pusher-js';
 import { useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
 
@@ -35,6 +36,15 @@ export default function Mirror() {
   const { setModules } = useModules();
   const modules = ensure(views.find((view) => view.current)).modules;
   setModules(modules);
+
+  const pusher = new Pusher('0d6936c2869a9c129f99', {
+    cluster: 'eu',
+  });
+
+  const channel = pusher.subscribe('black-mirror');
+  channel.bind('deployed', () => {
+    location.reload();
+  });
 
   useSpeechRecognition({
     commands: [

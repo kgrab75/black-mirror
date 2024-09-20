@@ -74,7 +74,7 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
-          
+
   deploy-and-run-image:
     runs-on: self-hosted
     needs: build-and-push-image
@@ -93,3 +93,19 @@ jobs:
           PB_TOKEN: ${{ secrets.PB_TOKEN }}
           PB_TITLE: Black Mirror
           PB_TEXT: Black Mirror is released.
+
+      - name: Trigger deployed Pusher event
+        uses: farazatarodi/pusher-trigger@v1.0.0
+        with:
+          # Pusher app ID
+          app-id: ${{ secrets.PUSHER_APP_ID }}
+          # Pusher app key
+          app-key: ${{ secrets.PUSHER_KEY }}
+          # Pusher app secret
+          app-secret: ${{ secrets.PUSHER_SECRET }}
+          # Pusher app cluster
+          app-cluster: ${{ secrets.PUSHER_CLUSTER }}
+          # Pusher channel
+          channel: black-mirror
+          # Event name
+          event: deployed
