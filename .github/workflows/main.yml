@@ -107,5 +107,6 @@ jobs:
           app-cluster: ${{ secrets.PUSHER_CLUSTER }}
           # Pusher channel
           channel: black-mirror
+          message: '{"text":"${{github.sha}}"}'
           # Event name
           event: deployed
