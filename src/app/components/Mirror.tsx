@@ -37,11 +37,11 @@ export default function Mirror() {
   const modules = ensure(views.find((view) => view.current)).modules;
   setModules(modules);
 
-  const pusher = new Pusher('0d6936c2869a9c129f99', {
+  useEffect(() => {
+    const pusher = new Pusher('0d6936c2869a9c129f99', {
     cluster: 'eu',
   });
 
-  useEffect(() => {
     const channel = pusher.subscribe('black-mirror');
     channel.bind('deployed', () => {
       location.reload();
