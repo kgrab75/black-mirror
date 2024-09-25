@@ -2,6 +2,7 @@
 
 import Loader from '@/app/components/Loader';
 import EventsList from '@/app/components/modules/agenda/EventsList';
+import TextFit from '@/app/components/TextFit';
 import { AgendaProps } from '@/app/lib/definitions';
 import { stringToNumber } from '@/app/lib/utils';
 import { groupByDay, groupByMonth } from '@/app/lib/utils/agenda';
@@ -11,6 +12,7 @@ import {
   addWeeks,
   endOfWeek,
   isToday,
+  isYesterday,
   startOfWeek,
   subWeeks,
 } from 'date-fns';
@@ -18,7 +20,6 @@ import { fr } from 'date-fns/locale';
 import { Event } from 'nylas';
 import { useEffect, useRef, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
-import TextFit from '../TextFit';
 
 export default function Agenda(props: AgendaProps) {
   const ref = useRef(null);
@@ -93,6 +94,8 @@ export default function Agenda(props: AgendaProps) {
     const getEvents = async (displayLoading = true) => {
       try {
         displayLoading && setLoading(true);
+
+        isYesterday(displayDate) && setDisplayDate(new Date());
 
         const startDate = isToday(displayDate)
           ? displayDate

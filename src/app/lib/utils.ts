@@ -1,79 +1,90 @@
-import { faBell, faCalendarDays, faClock, faCloudSun, faSun, faCompassDrafting, faTemperatureHalf, faUmbrella, faMapLocationDot, faLightbulb, faListCheck } from "@fortawesome/free-solid-svg-icons";
-import { DraftProps, Module, ModuleDetail } from "@/app/lib/definitions";
-
+import {
+  faBell,
+  faCalendarDays,
+  faClock,
+  faCloudSun,
+  faSun,
+  faCompassDrafting,
+  faTemperatureHalf,
+  faUmbrella,
+  faMapLocationDot,
+  faLightbulb,
+  faListCheck,
+  faSubway,
+} from '@fortawesome/free-solid-svg-icons';
+import { DraftProps, Module, ModuleDetail } from '@/app/lib/definitions';
 
 export const moduleDetails: ModuleDetail[] = [
   {
     type: 'Agenda',
     labels: ['agenda', 'calendrier'],
-    icon: faCalendarDays
+    icon: faCalendarDays,
   },
   {
     type: 'Draft',
     labels: ['ébauche'],
-    icon: faCompassDrafting
+    icon: faCompassDrafting,
   },
   {
     type: 'Clock',
     labels: ['horloge'],
-    icon: faClock
+    icon: faClock,
   },
   {
     type: 'TodayDate',
     labels: ['date du jour'],
-    icon: faCalendarDays
+    icon: faCalendarDays,
   },
   {
     type: 'Notification',
     labels: ['notification'],
-    icon: faBell
+    icon: faBell,
   },
   {
     type: 'CurrentWeather',
     labels: ['météo actuelle'],
-    icon: faCloudSun
+    icon: faCloudSun,
   },
   {
     type: 'DailyForecastWeather',
     labels: ['météo quotidienne'],
-    icon: faSun
+    icon: faSun,
   },
   {
     type: 'HourlyForecastWeather',
     labels: ['météo horaires', 'météo horaire'],
-    icon: faSun
+    icon: faSun,
   },
   {
     type: 'TodayTemp',
     labels: ['température du jour'],
-    icon: faTemperatureHalf
+    icon: faTemperatureHalf,
   },
   {
     type: 'TodayPrecipitation',
     labels: ['précipitation du jour'],
-    icon: faUmbrella
+    icon: faUmbrella,
   },
   {
     type: 'WeatherLocation',
     labels: ['localisation de la météo', 'localisation'],
-    icon: faMapLocationDot
+    icon: faMapLocationDot,
   },
   {
     type: 'Switch',
-    labels: ['contrôle des lumières'],
-    icon: faLightbulb
+    labels: ['contrôle des lumières', 'lumière', 'lumières'],
+    icon: faLightbulb,
   },
   {
     type: 'Lists',
     labels: ['listes', 'liste'],
-    icon: faListCheck
+    icon: faListCheck,
   },
   {
-    type: 'Test',
-    labels: ['test'],
-    icon: faListCheck
+    type: 'StopWatcher',
+    labels: ['info transport'],
+    icon: faSubway,
   },
-
 ];
 
 export const moduleKeysInfo = {
@@ -84,9 +95,12 @@ export const moduleKeysInfo = {
   height: { label: 'hauteur' },
   type: { label: 'type' },
   visible: { label: 'visible' },
-}
+};
 
-export function ensure<T>(argument: T | undefined | null, message: string = 'This value was promised to be there.'): T {
+export function ensure<T>(
+  argument: T | undefined | null,
+  message: string = 'This value was promised to be there.',
+): T {
   if (argument === undefined || argument === null) {
     throw new TypeError(message);
   }
@@ -95,19 +109,27 @@ export function ensure<T>(argument: T | undefined | null, message: string = 'Thi
 }
 
 export function type2label(type: 'string'): string {
-  return ensure(moduleDetails.find((module) => module.type === type)?.labels[0]);
+  return ensure(
+    moduleDetails.find((module) => module.type === type)?.labels[0],
+  );
 }
 
 export function label2type(label: string): string | undefined {
-  return moduleDetails.find((module) => module.labels.includes(label.toLocaleLowerCase()))?.type;
+  return moduleDetails.find((module) =>
+    module.labels.includes(label.toLocaleLowerCase()),
+  )?.type;
 }
 
 export function labelExists(label: string) {
-  return moduleDetails.some(module => module.labels.includes(label.toLocaleLowerCase()));
+  return moduleDetails.some((module) =>
+    module.labels.includes(label.toLocaleLowerCase()),
+  );
 }
 
 export function getDraftModule(modules: Module[]) {
-  return modules.find(module => module.type === 'Draft') as DraftProps ?? null;
+  return (
+    (modules.find((module) => module.type === 'Draft') as DraftProps) ?? null
+  );
 }
 
 export function stringToNumber(string: string | number): number {
@@ -125,5 +147,6 @@ export function getEnvVariable(variableName: string): string {
 }
 
 export function getIcon(typeString: string) {
-  return ensure(moduleDetails.find((module) => module.type === typeString)).icon;
+  return ensure(moduleDetails.find((module) => module.type === typeString))
+    .icon;
 }

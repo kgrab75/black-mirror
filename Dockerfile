@@ -1,11 +1,16 @@
 FROM node:18-alpine AS base
 
+RUN apk add -U tzdata
+ENV TZ=Europe/Paris
+RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
+
 LABEL org.opencontainers.image.source=https://github.com/kgrab75/black-mirror
 LABEL org.opencontainers.image.description="My container image"
 LABEL org.opencontainers.image.licenses=MIT
 
 ARG BASE_URL
 ARG NEXT_PUBLIC_OPEN_WEATHER_API_KEY
+ARG NEXT_PUBLIC_PRIM_API_KEY
 ARG BASE_URL_DOMO
 ARG USERNAME_DOMO
 ARG PASSWORD_DOMO
@@ -15,6 +20,7 @@ ARG NYLAS_API_URI
 
 ENV BASE_URL=$BASE_URL
 ENV NEXT_PUBLIC_OPEN_WEATHER_API_KEY=$NEXT_PUBLIC_OPEN_WEATHER_API_KEY
+ENV NEXT_PUBLIC_PRIM_API_KEY=$NEXT_PUBLIC_PRIM_API_KEY
 ENV BASE_URL_DOMO=$BASE_URL_DOMO
 ENV USERNAME_DOMO=$USERNAME_DOMO
 ENV PASSWORD_DOMO=$PASSWORD_DOMO

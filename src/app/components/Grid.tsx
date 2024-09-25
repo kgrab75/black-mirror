@@ -1,6 +1,7 @@
 'use client';
 import 'regenerator-runtime/runtime';
 
+import clsx from 'clsx';
 import { useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
 
@@ -46,7 +47,13 @@ export default function Grid({}) {
   }
   return (
     displayGrid && (
-      <div className="grid-container">
+      <div
+        className={clsx(
+          'grid-container',
+          process.env.NODE_ENV !== 'production' &&
+            '!w-[1080px] !h-[1920px] border border-white',
+        )}
+      >
         {coordonates.map((coordonate) => {
           return (
             <div key={coordonate} className="mirror-grid">

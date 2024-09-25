@@ -60,6 +60,7 @@ jobs:
           build-args: |
             BASE_URL=${{ secrets.BASE_URL }}
             NEXT_PUBLIC_OPEN_WEATHER_API_KEY=${{ secrets.NEXT_PUBLIC_OPEN_WEATHER_API_KEY }}
+            NEXT_PUBLIC_PRIM_API_KEY=${{ secrets.NEXT_PUBLIC_PRIM_API_KEY }}
             BASE_URL_DOMO=${{ secrets.BASE_URL_DOMO }}
             USERNAME_DOMO=${{ secrets.USERNAME_DOMO }}
             PASSWORD_DOMO=${{ secrets.PASSWORD_DOMO }}

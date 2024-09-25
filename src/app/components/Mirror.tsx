@@ -29,6 +29,10 @@ function extractWeatherLocation(modules: Module[]): WeatherLocation | null {
   return null;
 }
 
+function reload() {
+  location.reload();
+}
+
 export default function Mirror() {
   const [isEditing, setIsEditing] = useState(false);
   const [displayViews, setDisplayViews] = useState(false);
@@ -39,13 +43,11 @@ export default function Mirror() {
 
   useEffect(() => {
     const pusher = new Pusher('0d6936c2869a9c129f99', {
-    cluster: 'eu',
-  });
+      cluster: 'eu',
+    });
 
     const channel = pusher.subscribe('black-mirror');
-    channel.bind('deployed', () => {
-      location.reload();
-    });
+    channel.bind('deployed', reload);
 
     return () => {
       channel.unbind('deployed');
@@ -57,9 +59,7 @@ export default function Mirror() {
     commands: [
       {
         command: ['Recharge la page'],
-        callback: () => {
-          location.reload();
-        },
+        callback: reload,
       },
       {
         command: ['Mode édition'],

@@ -20,8 +20,8 @@ import {
   HourlyForecastWeather,
   Lists,
   Notification,
+  StopWatcher,
   Switch,
-  Test,
   TodayDate,
   TodayPrecipitation,
   TodayTemp,
@@ -96,7 +96,7 @@ export default function Module(props: ModuleProps) {
     WeatherLocation: WeatherLocation,
     Switch: Switch,
     Lists: Lists,
-    Test: Test,
+    StopWatcher: StopWatcher,
   };
 
   const renderModule = (type: string, props: any) => {

@@ -11,4 +11,4 @@ export { default as TodayDate } from './TodayDate';
 export { default as TodayPrecipitation } from './TodayPrecipitation';
 export { default as TodayTemp } from './TodayTemp';
 export { default as WeatherLocation } from './WeatherLocation';
-export { default as Test } from './Test';
+export { default as StopWatcher } from './StopWatcher';
