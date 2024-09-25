@@ -128,7 +128,7 @@ export default function StopWathcer(props: ModuleProps) {
         <TextFit widthFactor={0.1} heightFactor={0.1} refParent={ref}>
           {stopSchedules.length === 0 ? (
             <div>
-              Aucune station "{stop}" trouvée sur la ligne "{line}"
+              {`Aucune station "${stop}" trouvée sur la ligne "${line}"`}
             </div>
           ) : (
             stopSchedules.map((stopSchedule, index) => (
