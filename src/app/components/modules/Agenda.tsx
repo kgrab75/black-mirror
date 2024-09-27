@@ -28,9 +28,22 @@ export default function Agenda(props: AgendaProps) {
   const [weeksToShow, setWeeksToShow] = useState(2);
   const [loading, setLoading] = useState(true);
   const [displayDate, setDisplayDate] = useState(new Date());
+  const [displayDisplayDate, setDisplayDisplayDate] = useState(false);
 
   useSpeechRecognition({
     commands: [
+      {
+        command: ['Affiche la date'],
+        callback: () => {
+          setDisplayDisplayDate(true);
+        },
+      },
+      {
+        command: ['Cache la date'],
+        callback: () => {
+          setDisplayDisplayDate(false);
+        },
+      },
       {
         command: [
           '(Affiche) :weeksToShow semaine',
@@ -141,6 +154,7 @@ export default function Agenda(props: AgendaProps) {
 
   return (
     <div className="relative size-full px-1" ref={ref}>
+      {displayDisplayDate && <div>{displayDate.toLocaleString()}</div>}
       {loading ? (
         <Loader />
       ) : (
