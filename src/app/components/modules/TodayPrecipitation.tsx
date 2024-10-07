@@ -52,7 +52,7 @@ export default function TodayPrecipitation(props: ModuleProps) {
   const { loading, precipitationWeatherDatas } = useWeather(
     weatherLocation,
     params,
-    'precipitation'
+    'precipitation',
   );
 
   if (loading) {
@@ -73,7 +73,7 @@ export default function TodayPrecipitation(props: ModuleProps) {
             heightFactor={displayPrecipitation ? 0.2 : 0.35}
             refParent={ref}
           >
-            <div className="temperatures flex justify-center items-center flex-col">
+            <div className="temperatures flex justify-center items-center flex-col h-[inherit]">
               <FontAwesomeIcon
                 icon={faUmbrella}
                 size="2x"
