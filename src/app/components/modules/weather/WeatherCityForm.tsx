@@ -62,17 +62,17 @@ export default function WeatherCityForm({
     }
   }
   return (
-    <div className="relative size-full">
-      <div className="absolute size-full opacity-15 flex content-center justify-center flex-wrap p-5">
-        <FontAwesomeIcon icon={faCloudSun} className="size-full" />
-      </div>
+    <div className="relative size-full" ref={ref}>
+      <TextFit heightFactor={1} widthFactor={0.1} refParent={ref}>
+        <div className="absolute size-full opacity-10 flex content-center justify-center flex-wrap p-5 text-[6em]">
+          <FontAwesomeIcon icon={faCloudSun} className="size-full" />
+        </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="size-full flex flex-col justify-center"
-        ref={ref}
-      >
-        <TextFit heightFactor={0.1} widthFactor={0.9} refParent={ref}>
+        <form
+          onSubmit={handleSubmit}
+          className="size-full flex flex-col justify-center text-[1em]"
+          
+        >
           <label htmlFor="city" className="flex justify-center">
             Météo de
           </label>
@@ -84,8 +84,8 @@ export default function WeatherCityForm({
             className="text-center w-full bg-transparent"
           />
           <input type="submit" className="hidden" />
-        </TextFit>
-      </form>
+        </form>
+      </TextFit>
     </div>
   );
 }
