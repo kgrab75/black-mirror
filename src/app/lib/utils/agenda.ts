@@ -1,7 +1,6 @@
-import { EventsByDay, EventsByMonth } from "@/app/types/Agenda";
+import { EventsByDay, EventsByMonth } from '@/app/types/Agenda';
 import { Event } from 'nylas';
-import { date2String } from "@/app/lib/utils/date";
-
+import { date2String } from '@/app/lib/utils/date';
 
 export const groupByDay = (events: Event[]) => {
   let needToRemoveFirst = true;
@@ -15,7 +14,8 @@ export const groupByDay = (events: Event[]) => {
 
   events.forEach((event) => {
     if (event.when.object === 'datespan') {
-      if (event.when.startDate === formatedTodayDate && needToRemoveFirst) {
+      const todayDate = new Date(formatedTodayDate);
+      if (new Date(event.when.startDate) <= todayDate && needToRemoveFirst) {
         eventsByDay.pop();
         needToRemoveFirst = false;
       }
@@ -24,34 +24,38 @@ export const groupByDay = (events: Event[]) => {
       const isSingleDayEvent = dateDiffInDays(currentDate, endDate) <= 1;
       const totalDays = Math.ceil(
         (endDate.valueOf() - +new Date(event.when.startDate)) /
-        (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24),
       );
       let dayCounter = 1;
 
       while (currentDate < endDate) {
         const formattedDate = date2String(currentDate);
 
-        let dateEntry = eventsByDay.find(
-          (entry) => entry.date === formattedDate
-        );
-        if (!dateEntry) {
-          dateEntry = { date: formattedDate, events: [] };
-          eventsByDay.push(dateEntry);
+        if (currentDate >= todayDate) {
+          let dateEntry = eventsByDay.find(
+            (entry) => entry.date === formattedDate,
+          );
+          if (!dateEntry) {
+            dateEntry = { date: formattedDate, events: [] };
+            eventsByDay.push(dateEntry);
+          }
+          dateEntry.events.push({
+            type: event.when.object,
+            title: isSingleDayEvent
+              ? `${event.title}`
+              : `${event.title} (jour ${dayCounter}/${totalDays})`,
+          });
         }
-
-        dateEntry.events.push({
-          type: event.when.object,
-          title: isSingleDayEvent
-            ? `${event.title}`
-            : `${event.title} (jour ${dayCounter}/${totalDays})`,
-        });
 
         currentDate.setDate(currentDate.getDate() + 1);
         dayCounter++;
       }
     } else if (event.when.object === 'timespan') {
       const formattedDate = date2String(new Date(event.when.startTime * 1000));
-      if (formattedDate === formatedTodayDate && needToRemoveFirst) {
+      if (
+        new Date(formattedDate) <= new Date(formatedTodayDate) &&
+        needToRemoveFirst
+      ) {
         eventsByDay.pop();
         needToRemoveFirst = false;
       }
@@ -80,7 +84,7 @@ export const groupByMonth = (eventsByDay: EventsByDay[]) => {
     const date = new Date(event.date);
     let monthEntry = eventsByMonth.find(
       (entry) =>
-        entry.year === date.getFullYear() && entry.month === date.getMonth()
+        entry.year === date.getFullYear() && entry.month === date.getMonth(),
     );
     if (!monthEntry) {
       monthEntry = {
