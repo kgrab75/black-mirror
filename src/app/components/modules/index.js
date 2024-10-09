@@ -12,3 +12,4 @@ export { default as TodayPrecipitation } from './TodayPrecipitation';
 export { default as TodayTemp } from './TodayTemp';
 export { default as WeatherLocation } from './WeatherLocation';
 export { default as StopWatcher } from './StopWatcher';
+export { default as Weight } from './Weight';

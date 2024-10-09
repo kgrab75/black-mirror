@@ -27,7 +27,7 @@ export default function TextFit({
     } else {
       calculatedFontSize = Math.min(
         dimensions.width * widthFactor,
-        dimensions.height * heightFactor
+        dimensions.height * heightFactor,
       );
     }
 

@@ -26,6 +26,7 @@ import {
   TodayPrecipitation,
   TodayTemp,
   WeatherLocation,
+  Weight,
 } from './modules';
 
 export default function Module(props: ModuleProps) {
@@ -97,6 +98,7 @@ export default function Module(props: ModuleProps) {
     Switch: Switch,
     Lists: Lists,
     StopWatcher: StopWatcher,
+    Weight: Weight,
   };
 
   const renderModule = (type: string, props: any) => {

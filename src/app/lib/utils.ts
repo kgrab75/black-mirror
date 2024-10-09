@@ -11,6 +11,7 @@ import {
   faLightbulb,
   faListCheck,
   faSubway,
+  faWeightScale,
 } from '@fortawesome/free-solid-svg-icons';
 import { DraftProps, Module, ModuleDetail } from '@/app/lib/definitions';
 
@@ -84,6 +85,11 @@ export const moduleDetails: ModuleDetail[] = [
     type: 'StopWatcher',
     labels: ['info transport'],
     icon: faSubway,
+  },
+  {
+    type: 'Weight',
+    labels: ['poids'],
+    icon: faWeightScale,
   },
 ];
 

@@ -56,6 +56,11 @@ export interface ListsProps extends ModuleProps {
   options: ListsOptions;
 }
 
+export interface WeightProps extends ModuleProps {
+  type: 'Weight';
+  options: WeightOptions;
+}
+
 export interface AgendaProps extends ModuleProps {
   type: 'Agenda';
   options: AgendaOptions;
@@ -79,6 +84,11 @@ interface ListsOptions {
   currentListUuid: string;
 }
 
+interface WeightOptions {
+  access_token?: string;
+  refresh_token?: string;
+}
+
 interface AgendaOptions {
   grantId?: string;
   primaryCalendar: Calendar;
@@ -89,7 +99,8 @@ export type Module =
   | WeatherLocationProps
   | ListsProps
   | AgendaProps
-  | DraftProps;
+  | DraftProps
+  | WeightProps;
 
 export type Dimensions = {
   height?: number;
@@ -129,4 +140,5 @@ export interface Modules {
   Switch: (props: ModuleProps) => JSX.Element;
   Lists: (props: ListsProps) => JSX.Element;
   StopWatcher: (props: ModuleProps) => JSX.Element;
+  Weight: (props: WeightProps) => JSX.Element;
 }
