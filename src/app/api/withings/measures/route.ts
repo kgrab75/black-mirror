@@ -33,9 +33,9 @@ async function getMeasures(
   moduleId: number,
   toRefresh = true,
 ) {
-  const module = (await fetchModule(moduleId)) as WeightProps;
+  const myModule = (await fetchModule(moduleId)) as WeightProps;
   const config = {
-    headers: { Authorization: `Bearer ${module.options.access_token}` },
+    headers: { Authorization: `Bearer ${myModule.options.access_token}` },
   };
 
   const measureGetmeasPayload = {
@@ -50,9 +50,9 @@ async function getMeasures(
   const status = response.data.status;
 
   if (status === 401 && toRefresh) {
-    const state = JSON.stringify({ moduleId: module.id });
+    const state = JSON.stringify({ moduleId: myModule.id });
     await fetch(
-      `${process.env.BASE_URL}/api/withings/exchange?grantType=refresh_token&state=${state}&refreshToken=${module.options.refresh_token}`,
+      `${process.env.BASE_URL}/api/withings/exchange?grantType=refresh_token&state=${state}&refreshToken=${myModule.options.refresh_token}`,
     );
     return getMeasures(type, moduleId, false);
   }
