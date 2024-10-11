@@ -37,3 +37,8 @@ next-env.d.ts
 
 /data/*
 !/data/.keep
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

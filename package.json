@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node -r dotenv/config ./node_modules/.bin/next dev",
+    "build": "node -r dotenv/config ./node_modules/.bin/next build",
+    "start": "node -r dotenv/config ./node_modules/.bin/next start",
     "lint": "next lint",
     "telemetry_off": "next telemetry --disable",
     "telemetry_on": "next telemetry --enable"
@@ -21,6 +21,7 @@
     "change-case": "^5.4.4",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "dotenv": "^16.4.5",
     "lowdb": "^7.0.1",
     "next": "^14.2.5",
     "nylas": "^7.5.2",

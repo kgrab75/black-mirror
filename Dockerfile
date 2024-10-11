@@ -8,26 +8,6 @@ LABEL org.opencontainers.image.source=https://github.com/kgrab75/black-mirror
 LABEL org.opencontainers.image.description="My container image"
 LABEL org.opencontainers.image.licenses=MIT
 
-ARG BASE_URL
-ARG NEXT_PUBLIC_OPEN_WEATHER_API_KEY
-ARG NEXT_PUBLIC_PRIM_API_KEY
-ARG BASE_URL_DOMO
-ARG USERNAME_DOMO
-ARG PASSWORD_DOMO
-ARG NYLAS_CLIENT_ID
-ARG NYLAS_API_KEY
-ARG NYLAS_API_URI
-
-ENV BASE_URL=$BASE_URL
-ENV NEXT_PUBLIC_OPEN_WEATHER_API_KEY=$NEXT_PUBLIC_OPEN_WEATHER_API_KEY
-ENV NEXT_PUBLIC_PRIM_API_KEY=$NEXT_PUBLIC_PRIM_API_KEY
-ENV BASE_URL_DOMO=$BASE_URL_DOMO
-ENV USERNAME_DOMO=$USERNAME_DOMO
-ENV PASSWORD_DOMO=$PASSWORD_DOMO
-ENV NYLAS_CLIENT_ID=$NYLAS_CLIENT_ID
-ENV NYLAS_API_KEY=$NYLAS_API_KEY
-ENV NYLAS_API_URI=$NYLAS_API_URI
-
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
@@ -74,6 +54,8 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
+
+RUN mkdir -p ./data && chown nextjs:nodejs ./data
 
 # Set the correct permission for prerender cache
 RUN mkdir .next

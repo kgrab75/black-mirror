@@ -124,7 +124,7 @@ export default function Weight({ id, options }: WeightProps) {
 
     if (hasToken) {
       getWeights();
-      const interval = setInterval(() => getWeights(false), 0.5 * 60 * 1000);
+      const interval = setInterval(() => getWeights(false), 5 * 60 * 1000);
       return () => clearInterval(interval);
     }
   }, [measureInfo]);
