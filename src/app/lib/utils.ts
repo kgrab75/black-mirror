@@ -144,14 +144,6 @@ export function stringToNumber(string: string | number): number {
   return Number(string);
 }
 
-export function getEnvVariable(variableName: string): string {
-  const value = process.env[variableName];
-  if (!value) {
-    throw new Error(`Environment variable ${variableName} is not set.`);
-  }
-  return value;
-}
-
 export function getIcon(typeString: string) {
   return ensure(moduleDetails.find((module) => module.type === typeString))
     .icon;

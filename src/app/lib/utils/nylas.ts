@@ -2,7 +2,7 @@ import Nylas from "nylas";
 import { getEnvVariable } from "@/app/lib/utils";
 
 export const config = {
-  clientId: getEnvVariable('NYLAS_CLIENT_ID'),
+  clientId: process.env.NYLAS_CLIENT_ID,
   callbackUri: () => {
     const url = new URL('/api/nylas/oauth/exchange', process.env.BASE_URL);
     return url.toString();
