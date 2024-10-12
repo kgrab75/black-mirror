@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node -r dotenv/config ./node_modules/.bin/next dev",
-    "build": "node -r dotenv/config ./node_modules/.bin/next build",
-    "start": "node -r dotenv/config ./node_modules/.bin/next start",
+    "dev": "dotenvx run -- next dev",
+    "build": "dotenvx run -- next build",
+    "start": "dotenvx run -- next start",
     "lint": "next lint",
     "telemetry_off": "next telemetry --disable",
     "telemetry_on": "next telemetry --enable"
   },
   "dependencies": {
     "@atombrenner/openmeteo": "^0.2.0",
+    "@dotenvx/dotenvx": "^1.19.0",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -21,7 +22,6 @@
     "change-case": "^5.4.4",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "dotenv": "^16.4.5",
     "lowdb": "^7.0.1",
     "next": "^14.2.5",
     "nylas": "^7.5.2",

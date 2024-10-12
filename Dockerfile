@@ -8,9 +8,9 @@ LABEL org.opencontainers.image.source=https://github.com/kgrab75/black-mirror
 LABEL org.opencontainers.image.description="My container image"
 LABEL org.opencontainers.image.licenses=MIT
 
-ARG DOTENV_KEY
+ARG DOTENV_PRIVATE_KEY_PRODUCTION
 
-ENV DOTENV_KEY=$DOTENV_KEY
+ENV DOTENV_PRIVATE_KEY_PRODUCTION=$DOTENV_PRIVATE_KEY_PRODUCTION
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -50,6 +50,9 @@ RUN \
 FROM base AS runner
 WORKDIR /app
 
+# Install dotenvx
+RUN curl -sfS https://dotenvx.sh/install.sh | sh
+
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -79,4 +82,4 @@ ENV PORT=3000
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
 ENV HOSTNAME="0.0.0.0"
-CMD ["node", "server.js"]
+CMD ["dotenvx", "run", "--", "node", "server.js"]
