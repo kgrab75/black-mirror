@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "dotenvx run -- next dev",
-    "build": "dotenvx run -- next build",
-    "start": "dotenvx run -- next start",
+    "build": "dotenvx run -f .env.procution -- next build",
+    "start": "dotenvx run -f .env.procution -- next start",
     "lint": "next lint",
     "telemetry_off": "next telemetry --disable",
     "telemetry_on": "next telemetry --enable"
