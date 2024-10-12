@@ -8,14 +8,10 @@ LABEL org.opencontainers.image.source=https://github.com/kgrab75/black-mirror
 LABEL org.opencontainers.image.description="My container image"
 LABEL org.opencontainers.image.licenses=MIT
 
-ARG DOTENV_PRIVATE_KEY_PRODUCTION
-
-ENV DOTENV_PRIVATE_KEY_PRODUCTION=$DOTENV_PRIVATE_KEY_PRODUCTION
-
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat curl
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -51,6 +47,7 @@ FROM base AS runner
 WORKDIR /app
 
 # Install dotenvx
+RUN apk --no-cache add curl
 RUN curl -sfS https://dotenvx.sh/install.sh | sh
 
 ENV NODE_ENV=production
