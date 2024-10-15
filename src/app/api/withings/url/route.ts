@@ -15,10 +15,8 @@ export async function GET(request: NextRequest) {
   const state = JSON.stringify({ moduleId });
   const redirectURI = new URL(
     `/api/withings/exchange?grantType=authorization_code`,
-    process.env.BASE_URL,
+    process.env.REAL_BASE_URL,
   ).toString();
-
-  console.log({ URLredirectURI: redirectURI });
 
   const authUrl = `https://account.withings.com/oauth2_user/authorize2?response_type=code&client_id=${clientId}&scope=user.info,user.metrics,user.activity&redirect_uri=${redirectURI}&state=${state}`;
 

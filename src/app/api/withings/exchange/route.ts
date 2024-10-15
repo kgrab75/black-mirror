@@ -1,6 +1,7 @@
 import { updateModule } from '@/app/lib/actions';
 import { NextResponse, NextRequest } from 'next/server';
 import axios from 'axios';
+import Pusher from 'pusher';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     const redirectURI = new URL(
       `/api/withings/exchange?grantType=authorization_code`,
-      process.env.BASE_URL,
+      process.env.REAL_BASE_URL,
     ).toString();
 
     exchangePayload = {
@@ -49,8 +50,6 @@ export async function GET(request: NextRequest) {
       code: code,
       redirect_uri: redirectURI,
     };
-
-    console.log({ EXCHANGEredirectURI: redirectURI });
   } else {
     const refreshToken = searchParams.get('refreshToken');
 
@@ -75,15 +74,50 @@ export async function GET(request: NextRequest) {
       exchangePayload,
     );
 
-    
-    console.log({ oauthResponse: response.data });
-    console.log(iModuleId);
-
-    const { access_token, refresh_token } = response.data.body;
+    const {
+      access_token,
+      refresh_token,
+    }: { access_token: string; refresh_token: string } = response.data.body;
 
     if (access_token && refresh_token) {
       await updateModule(iModuleId, {
         options: { access_token, refresh_token },
+      });
+    }
+    if (
+      grantType === 'authorization_code' &&
+      process.env.PUSHER_APP_ID &&
+      process.env.PUSHER_APP_KEY &&
+      process.env.PUSHER_APP_SECRET
+    ) {
+      const pusher = new Pusher({
+        appId: process.env.PUSHER_APP_ID,
+        key: process.env.PUSHER_APP_KEY,
+        secret: process.env.PUSHER_APP_SECRET,
+        cluster: 'eu',
+        useTLS: true,
+      });
+
+      pusher.trigger('black-mirror', 'token-loaded', {
+        access_token,
+      });
+
+      const htmlContent = `
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>Fermer la fenêtre</title>
+          </head>
+          <body>
+            <p>Vous pouvez fermer cette fenêtre.</p>
+          </body>
+        </html>
+      `;
+
+      return new Response(htmlContent, {
+        headers: {
+          'Content-Type': 'text/html',
+        },
       });
     }
 

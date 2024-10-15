@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     await updateModule(iModuleId, { options: { grantId, primaryCalendar } });
 
-    const url = new URL('/', process.env.BASE_URL);
+    const url = new URL('/', process.env.REAL_BASE_URL);
 
     return NextResponse.redirect(url);
   } catch (error) {

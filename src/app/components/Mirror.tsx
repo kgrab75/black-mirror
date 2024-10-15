@@ -42,17 +42,19 @@ export default function Mirror() {
   setModules(modules);
 
   useEffect(() => {
-    const pusher = new Pusher('0d6936c2869a9c129f99', {
-      cluster: 'eu',
-    });
+    if (process.env.NEXT_PUBLIC_PUSHER_APP_KEY) {
+      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+        cluster: 'eu',
+      });
 
-    const channel = pusher.subscribe('black-mirror');
-    channel.bind('deployed', reload);
+      const channel = pusher.subscribe('black-mirror');
+      channel.bind('deployed', reload);
 
-    return () => {
-      channel.unbind('deployed');
-      pusher.unsubscribe('black-mirror');
-    };
+      return () => {
+        channel.unbind('deployed');
+        pusher.unsubscribe('black-mirror');
+      };
+    }
   }, []);
 
   useSpeechRecognition({

@@ -4,8 +4,8 @@ if (process.env.NYLAS_CLIENT_ID === undefined) {
   throw new Error('NYLAS_CLIENT_ID is undefined');
 }
 
-if (process.env.BASE_URL === undefined) {
-  throw new Error('BASE_URL is undefined');
+if (process.env.REAL_BASE_URL === undefined) {
+  throw new Error('REAL_BASE_URL is undefined');
 }
 
 if (process.env.NYLAS_API_KEY === undefined) {
@@ -19,7 +19,7 @@ if (process.env.NYLAS_API_URI === undefined) {
 export const config = {
   clientId: process.env.NYLAS_CLIENT_ID,
   callbackUri: () => {
-    const url = new URL('/api/nylas/oauth/exchange', process.env.BASE_URL);
+    const url = new URL('/api/nylas/oauth/exchange', process.env.REAL_BASE_URL);
     return url.toString();
   },
   apiKey: process.env.NYLAS_API_KEY,

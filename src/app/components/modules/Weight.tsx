@@ -4,6 +4,7 @@ import { WeightProps } from '@/app/lib/definitions';
 import { faCircleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import clsx from 'clsx';
+import Pusher from 'pusher-js';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
@@ -76,8 +77,9 @@ export default function Weight({ id, options }: WeightProps) {
   const [loading, setLoading] = useState(true);
   const [measures, setMeasures] = useState<MeasureEntry[]>([]);
   const [measureInfo, setMeasureInfo] = useState<MeasureInfo>(measureInfos[0]);
+  const [accessToken, setAccessToken] = useState('');
   const ref = useRef(null);
-  const hasToken = !!options.access_token;
+  const hasToken = !!options.access_token || accessToken !== '';
 
   useSpeechRecognition({
     commands: [
@@ -100,6 +102,23 @@ export default function Weight({ id, options }: WeightProps) {
       },
     ],
   });
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_PUSHER_APP_KEY) {
+      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+        cluster: 'eu',
+      });
+
+      const channel = pusher.subscribe('black-mirror');
+      channel.bind('token-loaded', (data: { access_token: string }) => {
+        setAccessToken(data.access_token);
+      });
+      return () => {
+        channel.unbind('token-loaded');
+        pusher.unsubscribe('black-mirror');
+      };
+    }
+  }, []);
 
   useEffect(() => {
     const getWeights = async (displayLoading = true) => {
@@ -127,11 +146,11 @@ export default function Weight({ id, options }: WeightProps) {
       const interval = setInterval(() => getWeights(false), 5 * 60 * 1000);
       return () => clearInterval(interval);
     }
-  }, [measureInfo]);
+  }, [measureInfo, hasToken]);
 
   const auth = new URL(
     `/api/withings/url?moduleId=${id}`,
-    process.env.NEXT_PUBLIC_BASE_URL,
+    process.env.NEXT_PUBLIC_REAL_BASE_URL,
   ).toString();
 
   const data = transformMeasuresToChartData(measures).slice(0, 7).reverse();

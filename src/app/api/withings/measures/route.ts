@@ -52,7 +52,7 @@ async function getMeasures(
   if (status === 401 && toRefresh) {
     const state = JSON.stringify({ moduleId: myModule.id });
     await fetch(
-      `${process.env.BASE_URL}/api/withings/exchange?grantType=refresh_token&state=${state}&refreshToken=${myModule.options.refresh_token}`,
+      `${process.env.REAL_BASE_URL}/api/withings/exchange?grantType=refresh_token&state=${state}&refreshToken=${myModule.options.refresh_token}`,
     );
     return getMeasures(type, moduleId, false);
   }
