@@ -1,9 +1,7 @@
 import { fetchModule } from '@/app/lib/data';
-import { date2UnixEpoch } from '@/app/lib/utils/date';
-import { nylas } from '@/app/lib/utils/nylas';
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
-import { Module, WeightProps } from '@/app/lib/definitions';
+import { WeightProps } from '@/app/lib/definitions';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -51,9 +49,10 @@ async function getMeasures(
 
   if (status === 401 && toRefresh) {
     const state = JSON.stringify({ moduleId: myModule.id });
-    await fetch(
-      `${process.env.REAL_BASE_URL}/api/withings/exchange?grantType=refresh_token&state=${state}&refreshToken=${myModule.options.refresh_token}`,
-    );
+    const exchangeURL = `${process.env.REAL_BASE_URL}/api/withings/exchange?grantType=refresh_token&state=${state}&refreshToken=${myModule.options.refresh_token}`;
+
+    await fetch(exchangeURL);
+
     return getMeasures(type, moduleId, false);
   }
   return response;

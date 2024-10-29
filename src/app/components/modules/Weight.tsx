@@ -79,7 +79,7 @@ export default function Weight({ id, options }: WeightProps) {
   const [measureInfo, setMeasureInfo] = useState<MeasureInfo>(measureInfos[0]);
   const [accessToken, setAccessToken] = useState('');
   const ref = useRef(null);
-  const hasToken = !!options.access_token || accessToken !== '';
+  const hasToken = !!options.access_token && accessToken !== '';
 
   useSpeechRecognition({
     commands: [
@@ -110,8 +110,8 @@ export default function Weight({ id, options }: WeightProps) {
       });
 
       const channel = pusher.subscribe('black-mirror');
-      channel.bind('token-loaded', (data: { access_token: string }) => {
-        setAccessToken(data.access_token);
+      channel.bind('token-loaded', (data: { access_token?: string }) => {
+        setAccessToken(data.access_token || '');
       });
       return () => {
         channel.unbind('token-loaded');
