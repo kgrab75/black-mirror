@@ -12,6 +12,7 @@ import useModules from '@/app/hooks/useModules';
 import useViews from '@/app/hooks/useViews';
 import { Module, WeatherLocation } from '@/app/lib/definitions';
 import { ensure } from '@/app/lib/utils';
+import clsx from 'clsx';
 import Pusher from 'pusher-js';
 import { useEffect, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
@@ -93,7 +94,12 @@ export default function Mirror() {
   const weatherLocation = extractWeatherLocation(modules);
 
   return (
-    <>
+    <div
+      className={clsx(
+        process.env.NODE_ENV !== 'production' &&
+          '!w-[1080px] !h-[1920px] border border-white',
+      )}
+    >
       {displayViews ? (
         <Views />
       ) : (
@@ -110,6 +116,6 @@ export default function Mirror() {
           </ModulesProvider>
         </>
       )}
-    </>
+    </div>
   );
 }

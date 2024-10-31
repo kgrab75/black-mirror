@@ -6,15 +6,17 @@ export async function GET(request: NextRequest) {
   const moduleId = searchParams.get('moduleId');
 
   if (!moduleId) {
-    return NextResponse.json({ message: 'Invalid moduleId parameter' }, { status: 400 });
+    return NextResponse.json(
+      { message: 'Invalid moduleId parameter' },
+      { status: 400 },
+    );
   }
 
   const authUrl = nylas.auth.urlForOAuth2({
     clientId: config.clientId,
     redirectUri: config.callbackUri(),
-    state: JSON.stringify({ moduleId })
+    state: JSON.stringify({ moduleId }),
   });
 
-  return NextResponse.json({ authUrl }, { status: 200 });
+  return NextResponse.redirect(authUrl);
 }
-

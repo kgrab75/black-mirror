@@ -18,17 +18,66 @@ import {
 } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Event } from 'nylas';
+import Pusher from 'pusher-js';
+import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
 
 export default function Agenda(props: AgendaProps) {
   const ref = useRef(null);
-  const [redirectUri, setRedirectUri] = useState('');
+  const [grantId, setGrantId] = useState(props.options.grantId || '');
+  const [calendarId, setCalendarId] = useState(
+    props.options.primaryCalendar?.id || '',
+  );
   const [events, setEvents] = useState<Event[]>([]);
   const [weeksToShow, setWeeksToShow] = useState(2);
   const [loading, setLoading] = useState(true);
   const [displayDate, setDisplayDate] = useState(new Date());
   const [displayDisplayDate, setDisplayDisplayDate] = useState(false);
+  const [lastEventUpdate, setLastEventUpdate] = useState(new Date());
+  const prevlastEventUpdate = useRef(lastEventUpdate);
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_PUSHER_APP_KEY) {
+      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+        cluster: 'eu',
+      });
+      const channelName = `agenda-${props.id}`;
+      const eventName = 'access-granted';
+
+      const channel = pusher.subscribe(channelName);
+      channel.bind(
+        eventName,
+        (data: { grantId?: string; calendarId?: string }) => {
+          setGrantId(data.grantId || '');
+          setCalendarId(data.calendarId || '');
+        },
+      );
+      return () => {
+        channel.unbind(eventName);
+        pusher.unsubscribe(channelName);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_PUSHER_APP_KEY) {
+      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+        cluster: 'eu',
+      });
+      const channelName = `agenda-${grantId}`;
+      const eventName = 'events-updated';
+
+      const channel = pusher.subscribe(channelName);
+      channel.bind(eventName, () => {
+        setLastEventUpdate(new Date());
+      });
+      return () => {
+        channel.unbind(eventName);
+        pusher.unsubscribe(channelName);
+      };
+    }
+  }, [grantId]);
 
   useSpeechRecognition({
     commands: [
@@ -86,24 +135,15 @@ export default function Agenda(props: AgendaProps) {
   });
 
   const id = props.id;
-  const grantId = props.options?.grantId;
-  const calendarId = props.options?.primaryCalendar.id;
+
+  const authUrl = new URL(
+    `/api/nylas/oauth/url?moduleId=${id}`,
+    process.env.NEXT_PUBLIC_REAL_BASE_URL,
+  ).toString();
+
+  const hasAccess = !!grantId;
 
   useEffect(() => {
-    const getRedirectURI = async () => {
-      try {
-        const response = await fetch(`/api/nylas/oauth/url?moduleId=${id}`, {
-          method: 'GET',
-        });
-        const { authUrl } = await response.json();
-        setRedirectUri(authUrl);
-      } catch (error) {
-        console.error('Error fetching redirect URI:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const getEvents = async (displayLoading = true) => {
       try {
         displayLoading && setLoading(true);
@@ -137,34 +177,33 @@ export default function Agenda(props: AgendaProps) {
       }
     };
 
-    if (!grantId) {
-      getRedirectURI();
-    } else {
-      getEvents();
-      const interval = setInterval(() => getEvents(false), 5 * 60 * 1000);
-      return () => clearInterval(interval);
+    if (hasAccess) {
+      const dispayLoader = prevlastEventUpdate.current === lastEventUpdate;
+      prevlastEventUpdate.current = lastEventUpdate;
+      getEvents(dispayLoader);
     }
-  }, [displayDate, id, grantId, calendarId, weeksToShow]);
-
-  const handleAuth = () => {
-    window.location.href = redirectUri;
-  };
+  }, [displayDate, id, grantId, calendarId, weeksToShow, lastEventUpdate]);
 
   const eventsByMonth = groupByMonth(groupByDay(events));
 
   return (
     <div className="relative size-full px-1" ref={ref}>
       {displayDisplayDate && <div>{displayDate.toLocaleString()}</div>}
-      {loading ? (
+      {loading && hasAccess ? (
         <Loader />
       ) : (
         <>
-          {redirectUri ? (
-            <button onClick={handleAuth}>Authenticate</button>
-          ) : (
+          {hasAccess ? (
             <TextFit widthFactor={0.1} heightFactor={0.4} refParent={ref}>
               <EventsList eventsByMonth={eventsByMonth} />
             </TextFit>
+          ) : (
+            <div className="fixed">
+              <QRCodeCanvas value={authUrl} size={512} marginSize={1} />
+              <a href={authUrl} target="_blank">
+                {authUrl}
+              </a>
+            </div>
           )}
         </>
       )}

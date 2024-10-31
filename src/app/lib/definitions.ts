@@ -90,8 +90,9 @@ interface WeightOptions {
 }
 
 interface AgendaOptions {
-  grantId?: string;
+  grantId: string;
   primaryCalendar: Calendar;
+  webhookSecret: string;
 }
 
 export type Module =

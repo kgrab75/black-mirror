@@ -196,8 +196,7 @@ export default function Modules({
       <div
         className={clsx(
           'modules-container',
-          process.env.NODE_ENV !== 'production' &&
-            '!w-[1080px] !h-[1920px] border border-white',
+          '!relative',
           nightMode && 'opacity-15',
         )}
       >

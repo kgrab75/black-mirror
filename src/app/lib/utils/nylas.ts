@@ -1,4 +1,4 @@
-import Nylas from 'nylas';
+import Nylas, { WebhookTriggers } from 'nylas';
 
 if (process.env.NYLAS_CLIENT_ID === undefined) {
   throw new Error('NYLAS_CLIENT_ID is undefined');
@@ -30,3 +30,30 @@ export const nylas = new Nylas({
   apiKey: config.apiKey,
   apiUri: config.apiUri,
 });
+
+export const createWebhook = async () => {
+  if (process.env.NYLAS_WEBHOOK_URL === undefined) {
+    throw new Error('NYLAS_WEBHOOK_URL is undefined');
+  }
+  if (process.env.NYLAS_WEBHOOK_EMAIL === undefined) {
+    throw new Error('NYLAS_WEBHOOK_EMAIL is undefined');
+  }
+  try {
+    const webhook = await nylas.webhooks.create({
+      requestBody: {
+        triggerTypes: [
+          WebhookTriggers.EventCreated,
+          WebhookTriggers.EventDeleted,
+          WebhookTriggers.EventUpdated,
+        ],
+        webhookUrl: process.env.NYLAS_WEBHOOK_URL,
+        description: 'My first webhook',
+        notificationEmailAddresses: [process.env.NYLAS_WEBHOOK_EMAIL],
+      },
+    });
+
+    return webhook;
+  } catch (error) {
+    console.error('Error creating webhook:', error);
+  }
+};
