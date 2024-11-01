@@ -49,7 +49,7 @@ export default function Grid({}) {
     displayGrid && (
       <div
         className={clsx(
-          'grid-container',
+          'grid-container absolute',
           process.env.NODE_ENV !== 'production' &&
             '!w-[1080px] !h-[1920px] border border-white',
         )}
