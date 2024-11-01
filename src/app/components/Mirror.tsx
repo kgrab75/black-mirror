@@ -96,6 +96,7 @@ export default function Mirror() {
   return (
     <div
       className={clsx(
+        'h-full',
         process.env.NODE_ENV !== 'production' &&
           '!w-[1080px] !h-[1920px] border border-white',
       )}

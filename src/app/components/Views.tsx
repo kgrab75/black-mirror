@@ -86,7 +86,7 @@ export default function Views() {
         ],
         callback: (viewName: string) => {
           const searchViewIndex = views.findIndex(
-            (view) => view.name.toLowerCase() === viewName.toLowerCase()
+            (view) => view.name.toLowerCase() === viewName.toLowerCase(),
           );
 
           setCurrentPage(Math.floor(searchViewIndex / viewsPerPage));
@@ -98,7 +98,7 @@ export default function Views() {
           const searchViewIndex = views.findIndex(
             (view) =>
               view.name.toLowerCase() === viewName.toLowerCase() ||
-              view.id === stringToNumber(viewName)
+              view.id === stringToNumber(viewName),
           );
 
           if (views[searchViewIndex]) {
@@ -172,12 +172,12 @@ export default function Views() {
   const btnPrevClass = clsx(btnsClass, currentPage === 0 && 'invisible');
   const btnNextClass = clsx(
     btnsClass,
-    startIndex + viewsPerPage >= views.length && 'invisible'
+    startIndex + viewsPerPage >= views.length && 'invisible',
   );
 
   return (
-    <>
-      <div className="flex absolute w-full justify-evenly">
+    <div className="h-full">
+      <div className="flex w-full justify-evenly">
         <button
           onClick={handlePreviousPage}
           disabled={currentPage === 0}
@@ -203,7 +203,7 @@ export default function Views() {
             key={view.id}
             className={clsx(
               'view h-full border relative',
-              view.current && 'border-4 border-blue-500'
+              view.current && 'border-4 border-blue-500',
             )}
           >
             <div className="view-name text-center w-full absolute">
@@ -220,6 +220,6 @@ export default function Views() {
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

@@ -193,13 +193,7 @@ export default function Modules({
   return (
     <>
       {displayLoadingBar && <LoadingBar duration={durationLoadingBar} />}
-      <div
-        className={clsx(
-          'modules-container',
-          '!relative',
-          nightMode && 'opacity-15',
-        )}
-      >
+      <div className={clsx('modules-container', nightMode && 'opacity-15')}>
         {draftModule && displayCreateModule && (
           <UpsertModule draft={draftModule} newModule={newModule} />
         )}
