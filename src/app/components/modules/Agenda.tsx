@@ -165,8 +165,17 @@ export default function Agenda(props: AgendaProps) {
             method: 'GET',
           },
         );
-        const { events } = await response.json();
-        setEvents(events || []);
+        const { events }: { events: Event[] } = await response.json();
+
+        const acceptedEvents = events.filter((event) =>
+          event.participants.some(
+            (participant) =>
+              participant.email === props.options.primaryCalendar?.id &&
+              participant.status === 'yes',
+          ),
+        );
+
+        setEvents(acceptedEvents || []);
       } catch (error) {
         console.error('Error fetching events:', error);
       } finally {
