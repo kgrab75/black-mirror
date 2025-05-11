@@ -12,7 +12,6 @@ import {
   addWeeks,
   endOfWeek,
   isToday,
-  isYesterday,
   startOfWeek,
   subWeeks,
 } from 'date-fns';
@@ -148,8 +147,6 @@ export default function Agenda(props: AgendaProps) {
       try {
         displayLoading && setLoading(true);
 
-        isYesterday(displayDate) && setDisplayDate(new Date());
-
         const startDate = isToday(displayDate)
           ? displayDate
           : startOfWeek(displayDate, { locale: fr });
@@ -183,6 +180,38 @@ export default function Agenda(props: AgendaProps) {
       getEvents(dispayLoader);
     }
   }, [displayDate, id, grantId, calendarId, weeksToShow, lastEventUpdate]);
+
+  useEffect(() => {
+    const now = new Date();
+    const tomorrow = new Date();
+    tomorrow.setHours(24, 0, 0, 0); // minuit demain
+    const msUntilMidnight = tomorrow.getTime() - now.getTime();
+
+    console.log(msUntilMidnight);
+
+    const timeout = setTimeout(() => {
+      setDisplayDate(new Date()); // ⚡️ Déclenche la récupération via useEffect
+
+      // Ensuite, mettre à jour tous les jours à minuit
+      const interval = setInterval(
+        () => {
+          setDisplayDate(new Date()); // ⚡️ Re-déclenche automatiquement getEvents
+        },
+        24 * 60 * 60 * 1000,
+      ); // chaque 24h
+
+      // Nettoyer l'intervalle quand le composant est démonté
+      const clear = () => clearInterval(interval);
+      window.addEventListener('beforeunload', clear); // en plus du return ci-dessous
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('beforeunload', clear);
+      };
+    }, msUntilMidnight);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   const eventsByMonth = groupByMonth(groupByDay(events));
 
