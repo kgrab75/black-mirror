@@ -8,7 +8,14 @@ import Pusher from 'pusher-js';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useRef, useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
-import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
+import {
+  Label,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  YAxis,
+} from 'recharts';
 
 interface Measure {
   value: number;
@@ -73,13 +80,18 @@ const measureInfos: MeasureInfo[] = [
   },
 ];
 
-export default function Weight({ id, options }: WeightProps) {
+export default function Weight({ id, options, height }: WeightProps) {
   const [loading, setLoading] = useState(true);
   const [measures, setMeasures] = useState<MeasureEntry[]>([]);
   const [measureInfo, setMeasureInfo] = useState<MeasureInfo>(measureInfos[0]);
-  const [accessToken, setAccessToken] = useState('');
+  const [accessToken, setAccessToken] = useState(options.access_token || '');
+
+  const startDate = new Date('2025-05-12');
+  const targetWeight = options.targetWeight || 75;
+  const durationInWeeks = options.durationInWeeks || 10;
+
   const ref = useRef(null);
-  const hasToken = !!options.access_token && accessToken !== '';
+  const hasAccess = !!accessToken;
 
   useSpeechRecognition({
     commands: [
@@ -95,6 +107,7 @@ export default function Weight({ id, options }: WeightProps) {
           'Affiche ma masse graisseuse',
           'Affiche la graisse',
           'Affiche ma graisse',
+          'Affiche mon gras',
         ],
         callback: () => {
           setMeasureInfo(measureInfos[1]);
@@ -141,21 +154,22 @@ export default function Weight({ id, options }: WeightProps) {
       }
     };
 
-    if (hasToken) {
+    if (hasAccess) {
       getWeights();
       const interval = setInterval(() => getWeights(false), 5 * 60 * 1000);
       return () => clearInterval(interval);
     }
-  }, [measureInfo, hasToken]);
+  }, [measureInfo, accessToken, hasAccess]);
 
   const auth = new URL(
     `/api/withings/url?moduleId=${id}`,
     process.env.NEXT_PUBLIC_REAL_BASE_URL,
   ).toString();
 
-  const data = transformMeasuresToChartData(measures).slice(0, 7).reverse();
+  const data = transformMeasuresToChartData(measures);
 
   const lastMeasure = data.at(-1);
+  const latestWeight = lastMeasure?.value;
   const trend = calculateTrendFromDataPoints(data);
 
   const trendLabel =
@@ -165,13 +179,22 @@ export default function Weight({ id, options }: WeightProps) {
         ? measureInfo.trend.negative
         : measureInfo.trend.neutral;
 
+  const nextTargetWeight = calculateTargetWeight(
+    startDate,
+    findStartWeight(data, startDate),
+    targetWeight,
+    durationInWeeks,
+  );
+
+  const difference = (latestWeight || nextTargetWeight) - nextTargetWeight;
+  const formatted = `${nextTargetWeight} (${difference > 0 ? '+' : ''}${difference.toFixed(1)})`;
   return (
-    <div className="relative size-full px-1 border" ref={ref}>
-      {loading && hasToken ? (
+    <div className="relative size-full px-1" ref={ref}>
+      {loading && hasAccess ? (
         <Loader />
       ) : (
         <>
-          {hasToken ? (
+          {hasAccess ? (
             <TextFit widthFactor={0.1} heightFactor={0.1} refParent={ref}>
               <div className="flex flex-col h-full justify-between">
                 <div className="head flex justify-between w-full text-[0.7em]">
@@ -184,7 +207,7 @@ export default function Weight({ id, options }: WeightProps) {
                     })}
                   </div>
                 </div>
-                <div className="measure text-[3em] flex justify-center">
+                <div className="measure text-[2em] flex justify-center">
                   <div className="last-weight flex items-baseline">
                     <div className="value">{lastMeasure?.value}</div>
                     <div className="unit text-[0.5em]">kg</div>
@@ -194,15 +217,16 @@ export default function Weight({ id, options }: WeightProps) {
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={data}
-                      margin={{ top: 25, right: 20, bottom: 20, left: 20 }}
+                      margin={{ top: 35, right: 30, bottom: 20, left: 30 }}
                     >
                       <Line
                         type="linear"
                         dataKey="value"
                         label={{
                           fill: 'white',
-                          fontSize: 15,
-                          dy: -15,
+                          fontSize: '0.5em',
+                          dy: -20,
+                          dx: -5,
                           fontWeight: 'bold',
                         }}
                         dot={{
@@ -214,7 +238,24 @@ export default function Weight({ id, options }: WeightProps) {
                         stroke={measureInfo.color}
                         strokeWidth={2}
                       />
-                      <YAxis hide={true} domain={['dataMin', 'dataMax']} />
+                      <ReferenceLine
+                        y={nextTargetWeight}
+                        stroke="yellow"
+                        strokeWidth="2"
+                        strokeDasharray="3 3"
+                        label={
+                          <Label
+                            value={formatted}
+                            position="insideBottomLeft"
+                            fill="yellow"
+                            fontSize="0.5em"
+                          />
+                        }
+                      />
+                      <YAxis
+                        hide={true}
+                        domain={[nextTargetWeight, 'dataMax']}
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -233,8 +274,8 @@ export default function Weight({ id, options }: WeightProps) {
               </div>
             </TextFit>
           ) : (
-            <div className="fixed">
-              <QRCodeCanvas value={auth} size={512} marginSize={1} />
+            <div className="flex items-center flex-col">
+              <QRCodeCanvas value={auth} size={height * 150} marginSize={1} />
               <a href={auth} target="_blank">
                 {auth}
               </a>
@@ -252,7 +293,7 @@ function convertWeight(value: number, unit: number): number {
 }
 
 function transformMeasuresToChartData(measures: MeasureEntry[]) {
-  return measures
+  const chartData = measures
     .map((measure) => {
       // Trouver la mesure correspondant au poids (type: 1 pour le poids)
       const weightMeasure = measure.measures;
@@ -270,9 +311,14 @@ function transformMeasuresToChartData(measures: MeasureEntry[]) {
         name: date,
         date: date.valueOf(),
         value: parseFloat(weightValue.toFixed(1)), // Arrondir à une décimale
+        goal: null,
       };
     })
-    .filter(Boolean) as Data[]; // Filtrer les valeurs nulles
+    .filter(Boolean) // Filtrer les valeurs nulles
+    .slice(0, 5)
+    .reverse() as Data[];
+
+  return chartData;
 }
 
 function calculateTrendFromDataPoints(data: Data[]): number {
@@ -283,9 +329,9 @@ function calculateTrendFromDataPoints(data: Data[]): number {
 
   // Sommes nécessaires pour la régression linéaire
   const sumX = timestamps.reduce((acc, timestamp) => acc + timestamp, 0); // somme des timestamps
-  const sumY = data.reduce((acc, point) => acc + point.value, 0); // somme des valeurs
+  const sumY = data.reduce((acc, point) => acc + (point.value || 0), 0); // somme des valeurs
   const sumXY = data.reduce(
-    (acc, point, index) => acc + timestamps[index] * point.value,
+    (acc, point, index) => acc + timestamps[index] * (point.value || 0),
     0,
   ); // somme des produits timestamp * valeur
   const sumX2 = timestamps.reduce(
@@ -304,4 +350,48 @@ function calculateTrendFromDataPoints(data: Data[]): number {
 
   // Retourner la pente
   return numerator / denominator;
+}
+
+function findStartWeight(entries: Data[], startDate: Date): number {
+  const startTimestamp = startDate.getTime();
+
+  // Filter entries before or at the start date
+  const beforeOrEqual = entries.filter((e) => e.date <= startTimestamp);
+
+  // If we have past entries, take the latest one
+  if (beforeOrEqual.length > 0) {
+    const latest = beforeOrEqual.reduce((a, b) => (a.date > b.date ? a : b));
+    return latest.value;
+  }
+
+  // Otherwise, take the earliest future entry
+  const after = entries.filter((e) => e.date > startTimestamp);
+  if (after.length > 0) {
+    const earliest = after.reduce((a, b) => (a.date < b.date ? a : b));
+    return earliest.value;
+  }
+
+  // No data available
+  return 85;
+}
+
+function calculateTargetWeight(
+  startDate: Date,
+  startWeight: number,
+  targetWeight: number,
+  durationInWeeks: number,
+): number {
+  const currentDate = new Date();
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const weeksElapsed = Math.floor(
+    (currentDate.getTime() - startDate.getTime()) / msPerWeek,
+  );
+
+  if (weeksElapsed <= 0) return startWeight;
+  if (weeksElapsed >= durationInWeeks) return targetWeight;
+
+  const progress = weeksElapsed / durationInWeeks;
+  const currentTarget = startWeight + (targetWeight - startWeight) * progress;
+
+  return parseFloat(currentTarget.toFixed(1)); // round to 1 decimal place
 }

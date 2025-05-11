@@ -87,6 +87,9 @@ interface ListsOptions {
 interface WeightOptions {
   access_token?: string;
   refresh_token?: string;
+  startDate?: string;
+  targetWeight?: number;
+  durationInWeeks?: number;
 }
 
 interface AgendaOptions {
