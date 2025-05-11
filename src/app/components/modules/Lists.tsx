@@ -71,12 +71,6 @@ export default function Lists(props: ListsProps) {
         ],
         callback: async (itemName: string) => {
           const name = sentenceCase(itemName);
-          await fetch(
-            `/api/bring?listUuid=${currentListUuid}&itemName=${name}`,
-            {
-              method: 'POST',
-            },
-          );
 
           setLists(
             lists.map((list) => {
@@ -90,6 +84,13 @@ export default function Lists(props: ListsProps) {
             }),
           );
 
+          await fetch(
+            `/api/bring?listUuid=${currentListUuid}&itemName=${name}`,
+            {
+              method: 'POST',
+            },
+          );
+
           setTimeout(() => setNbLoadItems(nbLoadItems + 1), 100);
         },
       },
@@ -100,13 +101,6 @@ export default function Lists(props: ListsProps) {
           if (
             getList(currentListUuid).items.find((item) => item.name === name)
           ) {
-            await fetch(
-              `/api/bring?listUuid=${currentListUuid}&itemName=${name}`,
-              {
-                method: 'DELETE',
-              },
-            );
-
             setLists(
               lists.map((list) => {
                 if (list.listUuid === currentListUuid) {
@@ -117,6 +111,13 @@ export default function Lists(props: ListsProps) {
                 }
                 return list;
               }),
+            );
+
+            await fetch(
+              `/api/bring?listUuid=${currentListUuid}&itemName=${name}`,
+              {
+                method: 'DELETE',
+              },
             );
           }
         },
