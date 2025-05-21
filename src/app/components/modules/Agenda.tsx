@@ -167,12 +167,14 @@ export default function Agenda(props: AgendaProps) {
         );
         const { events }: { events: Event[] } = await response.json();
 
-        const acceptedEvents = events.filter((event) =>
-          event.participants.some(
-            (participant) =>
-              participant.email === props.options.primaryCalendar?.id &&
-              participant.status === 'yes',
-          ),
+        const acceptedEvents = events.filter(
+          (event) =>
+            event.participants.some(
+              (participant) =>
+                participant.email === props.options.primaryCalendar?.id &&
+                participant.status === 'yes',
+            ) ||
+            (event.participants.length === 0 && event.status === 'confirmed'),
         );
 
         setEvents(acceptedEvents || []);
