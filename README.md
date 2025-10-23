@@ -2,98 +2,98 @@
 
 An application for a connected mirror
 
+<img width="435" height="607" alt="blackMirrorDemo" src="https://github.com/user-attachments/assets/40cc1ae7-5d3f-41c5-bcc5-ce501c6bd701" />
+
+
 ## Modules
 
-Each mouule should have between 2 and 4 displays:
+### Agenda
 
-- Widget (1/8)
-- Quarter screen
-- Half screen
-- Full screen
+Shows upcoming events for today and the next days.
 
-### Weather
-
-Display the weather
-
-### Lists
-
-To-Do or To-Buy Lists
-
-#### Features
-
-- List:
-  - Add a list
-  - Tag a list as default
-  - Rename a list
-  - Update list owners
-  - Delete a list
-- Item:
-  - Add an item to a list
-  - Delete an item
-  - Move a item from list to list
-  -
-
-### Events
-
-An event manager synchronized with Google Calendar
-
-#### Features
-
-- Add an event:
-  - Title
-  - All day
-  - Start & End Date(Time)
-  - Recurrendcy
-  - Location
-  - Reminder
-  - Owner (Calendar)
+**Provider:** Nylas API
 
 ### Clock
 
-A numeric clock
+Digital clock (24-hour), optional seconds.
 
-#### Features
+**Provider:** None (system time)
 
-- Clock
-- Clock from a different timezone
-- Named timer
+### CurrentWeather
 
-### News
+Current conditions: temperature, feels-like, wind, icon.
 
-A carousel of current news
+**Provider:** Open-Meteo API
 
-#### Features
+### DailyForecastWeather
 
-- Title
-- Show More
-- Search
+Daily min/max and trend for the next N days.
 
-### Electricity Consumption
+**Provider:** Open-Meteo API
 
-Display infos about Electricity Consumption
+### Draft
 
-#### Features
+Sandbox tile for prototyping/POCs.
 
-- Live consumption
-- Weekly/Monthly consumption
+**Provider:** None
 
-### Public Transport Schedule
+### HourlyForecastWeather
 
-Display infos about near public Transport
+Next-hours forecast (temperature/precipitation).
 
-#### Features
+**Provider:** Open-Meteo API
 
-- Expected Departure
-  - Add stop
-  - Delete stop
-- Trafic Info
-  - Add line
-  - Delete line
+### Lists
 
-### Health
+Simple shopping lists with add/remove/toggle.
 
-Display infos user health and workouts
+**Provider:** Bring API
 
-#### Features
+### Notification
 
-- Synch with Google Fit
+Transient system/user notifications triggered by other modules.
+
+**Provider:** Internal
+
+### StopWatcher
+
+Next departures for saved stops/lines.
+
+**Provider:** Île-de-France Mobilités API via [`@kgrab75/stop-watcher`](https://www.npmjs.com/package/@kgrab75/stop-watcher)
+
+### Switch
+
+Toggle smart devices/scenes.
+
+**Provider:** Generic HTTP/Webhook driver
+
+### TodayDate
+
+Localized date for today.
+
+**Provider:** None (system date)
+
+### TodayPrecipitation
+
+Today’s precipitation probability/accumulation.
+
+**Provider:** Open-Meteo API
+
+### TodayTemp
+
+Today’s min/max (optionally deviation vs. normal).
+
+**Provider:** Open-Meteo API
+
+### WeatherLocation
+
+Displays/sets the location label used by weather tiles.
+
+**Provider:** Open-Meteo API
+
+### Weight
+
+Latest weight and short/medium-term trend.
+
+**Provider:** Withings API
+
