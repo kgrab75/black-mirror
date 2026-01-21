@@ -15,48 +15,61 @@ export default function Switch(props: ModuleProps) {
   const [lightState, setLightState] = useState('off');
   const [animate, setAnimate] = useState(false);
 
+  const normalize = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const ROOM_VARIANTS: Array<[string, string]> = [
+    ['salle de bains', 'salle de bain'],
+    ['salle de bain', 'salle de bain'],
+    ['sdb', 'salle de bain'],
+    ['toilettes', 'toilettes'],
+    ['wc', 'toilettes'],
+    ['bureau', 'bureau'],
+    ['chambre', 'chambre'],
+    ['cuisine', 'cuisine'],
+    ['salon', 'salon'],
+  ];
+
+  const findRoom = (raw: string): string | null => {
+    const s = normalize(raw);
+    for (const [v, room] of ROOM_VARIANTS) if (s.includes(v)) return room;
+    return null;
+  };
+
+  const isAll = (raw: string) => {
+    const s = normalize(raw);
+    return s.includes('toutes') || s.includes('tout');
+  };
+
+  const ON = new Set(['allume', 'allumer', 'mets', 'met', 'active', 'activer']);
+  const CMD =
+    /(?:^|.*?[\s,;:.!?])(allume|allumer|mets|met|active|activer|eteins|éteins|eteindre|éteindre|coupe|couper|desactive|désactive|desactiver|désactiver|arrete|arrête|stop|au revoir)\s*(.*)$/i;
+
   useSpeechRecognition({
     commands: [
       {
-        command: [
-          'Allume la lumière du *',
-          'Allume la lumière de la *',
-          'Allume la lumière des *',
-          'Allume les lumières du *',
-          'Allume les lumières de la *',
-          'Allume les lumières des *',
-        ],
-        callback: (room) => {
-          handleLightToggle('on', room);
-        },
-      },
-      {
-        command: [
-          'éteins la lumière du *',
-          'éteins la lumière de la *',
-          'éteins la lumière des *',
-          'éteins les lumières du *',
-          'éteins les lumières de la *',
-          'éteins les lumières des *',
-        ],
-        callback: (room) => {
-          handleLightToggle('off', room);
-        },
-      },
-      {
-        command: [
-          'éteins toutes les lumières',
-          'éteins les lumières',
-          'Au revoir',
-        ],
-        callback: () => {
-          handleLightToggle('off', 'all');
-        },
-      },
-      {
-        command: ['Allume toutes les lumières'],
-        callback: () => {
-          handleLightToggle('on', 'all');
+        command: CMD,
+        callback: (verb: string, tail: string, meta: any) => {
+          const v = normalize(verb);
+
+          if (v === 'au revoir') {
+            meta?.resetTranscript?.();
+            handleLightToggle('off', 'all');
+            return;
+          }
+
+          const room = findRoom(tail) ?? (isAll(tail) ? 'all' : null);
+          if (!room) return;
+
+          const state: 'on' | 'off' = ON.has(v) ? 'on' : 'off';
+          meta?.resetTranscript?.();
+          handleLightToggle(state, room);
         },
       },
     ],
@@ -69,7 +82,7 @@ export default function Switch(props: ModuleProps) {
         `/api/light?state=${newState}&room=${room}`,
         {
           method: 'GET',
-        }
+        },
       );
 
       if (response.ok) {
