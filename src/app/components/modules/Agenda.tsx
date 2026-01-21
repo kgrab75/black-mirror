@@ -201,12 +201,12 @@ export default function Agenda(props: AgendaProps) {
     console.log(msUntilMidnight);
 
     const timeout = setTimeout(() => {
-      setDisplayDate(new Date()); // ⚡️ Déclenche la récupération via useEffect
+      setLastEventUpdate(new Date()); // ⚡️ Déclenche la récupération via useEffect
 
       // Ensuite, mettre à jour tous les jours à minuit
       const interval = setInterval(
         () => {
-          setDisplayDate(new Date()); // ⚡️ Re-déclenche automatiquement getEvents
+          setLastEventUpdate(new Date()); // ⚡️ Re-déclenche automatiquement getEvents
         },
         24 * 60 * 60 * 1000,
       ); // chaque 24h
