@@ -114,9 +114,9 @@ export async function GET(request: NextRequest) {
       await updateModule(iModuleId, {
         options: { access_token, refresh_token },
       });
+      triggerPush(access_token);
     }
 
-    triggerPush(access_token);
     const htmlContent = `
           <html>
             <head>
