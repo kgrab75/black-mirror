@@ -4,7 +4,7 @@ import { ReactNode, createContext, useState } from 'react';
 
 type NotificationContextType = {
   notification: string;
-  showNotification: (message: string) => void;
+  showNotification: (message: string, displayTime?: number) => void;
 };
 
 export const NotificationContext = createContext<NotificationContextType>({
@@ -19,11 +19,11 @@ interface NotificationProviderProps {
 function NotificationProvider({ children }: NotificationProviderProps) {
   const [notification, setNotification] = useState<string>('');
 
-  const showNotification = (message: string) => {
+  const showNotification = (message: string, displayTime: number = 3000) => {
     setNotification(message);
     setTimeout(() => {
       setNotification('');
-    }, 3000);
+    }, displayTime);
   };
 
   const value = {
