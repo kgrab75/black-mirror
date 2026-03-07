@@ -1,6 +1,7 @@
 'use client';
 
 import TextFit from '@/app/components/TextFit';
+import useNotification from '@/app/hooks/useNotification';
 import { ModuleProps } from '@/app/lib/definitions';
 import styles from '@/app/styles/Switch.module.css';
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +12,7 @@ import Loader from '../Loader';
 
 export default function Switch(props: ModuleProps) {
   const ref = useRef(null);
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
   const [lightState, setLightState] = useState('off');
   const [animate, setAnimate] = useState(false);
@@ -34,6 +36,7 @@ export default function Switch(props: ModuleProps) {
     ['chambre', 'chambre'],
     ['cuisine', 'cuisine'],
     ['salon', 'salon'],
+    ['sejour', 'salon'],
   ];
 
   const findRoom = (raw: string): string | null => {
@@ -44,12 +47,12 @@ export default function Switch(props: ModuleProps) {
 
   const isAll = (raw: string) => {
     const s = normalize(raw);
-    return s.includes('toutes') || s.includes('tout');
+    return s.includes('toutes les lumieres');
   };
 
-  const ON = new Set(['allume', 'allumer', 'mets', 'met', 'active', 'activer']);
+  const ON = new Set(['allume', 'allumer', 'active', 'activer']);
   const CMD =
-    /(?:^|.*?[\s,;:.!?])(allume|allumer|mets|met|active|activer|eteins|éteins|eteindre|éteindre|coupe|couper|desactive|désactive|desactiver|désactiver|arrete|arrête|stop|au revoir)\s*(.*)$/i;
+    /(?:^|.*?[\s,;:.!?])(allume|allumer|active|activer|eteins|éteins|eteindre|éteindre|coupe|couper|desactive|désactive|desactiver|désactiver|arrete|arrête|stop|au revoir)\s*(.*)$/i;
 
   useSpeechRecognition({
     commands: [
@@ -65,6 +68,9 @@ export default function Switch(props: ModuleProps) {
           }
 
           const room = findRoom(tail) ?? (isAll(tail) ? 'all' : null);
+          if (room === 'all') {
+            showNotification(`${verb} ${tail}`, 10000);
+          }
           if (!room) return;
 
           const state: 'on' | 'off' = ON.has(v) ? 'on' : 'off';
