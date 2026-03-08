@@ -3,6 +3,7 @@
 import Loader from '@/app/components/Loader';
 import EventsList from '@/app/components/modules/agenda/EventsList';
 import TextFit from '@/app/components/TextFit';
+import useNotification from '@/app/hooks/useNotification';
 import { AgendaProps } from '@/app/lib/definitions';
 import { stringToNumber } from '@/app/lib/utils';
 import { groupByDay, groupByMonth } from '@/app/lib/utils/agenda';
@@ -24,6 +25,7 @@ import { useSpeechRecognition } from 'react-speech-recognition';
 
 export default function Agenda(props: AgendaProps) {
   const ref = useRef(null);
+  const { showNotification } = useNotification();
   const [grantId, setGrantId] = useState(props.options.grantId || '');
   const [calendarId, setCalendarId] = useState(
     props.options.primaryCalendar?.id || '',
@@ -34,49 +36,68 @@ export default function Agenda(props: AgendaProps) {
   const [displayDate, setDisplayDate] = useState(new Date());
   const [displayDisplayDate, setDisplayDisplayDate] = useState(false);
   const [lastEventUpdate, setLastEventUpdate] = useState(new Date());
-  const prevlastEventUpdate = useRef(lastEventUpdate);
+  const prevLastEventUpdate = useRef(lastEventUpdate);
 
+  const pusherRef = useRef<Pusher | null>(null);
+
+  const [isPusherReady, setIsPusherReady] = useState(false);
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_PUSHER_APP_KEY) {
-      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-        cluster: 'eu',
-      });
-      const channelName = `agenda-${props.id}`;
-      const eventName = 'access-granted';
+    if (!process.env.NEXT_PUBLIC_PUSHER_APP_KEY) return;
 
-      const channel = pusher.subscribe(channelName);
-      channel.bind(
-        eventName,
-        (data: { grantId?: string; calendarId?: string }) => {
-          setGrantId(data.grantId || '');
-          setCalendarId(data.calendarId || '');
-        },
-      );
-      return () => {
-        channel.unbind(eventName);
-        pusher.unsubscribe(channelName);
-      };
-    }
+    pusherRef.current = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
+      cluster: 'eu',
+    });
+    setIsPusherReady(true);
+
+    return () => {
+      pusherRef.current?.disconnect();
+      pusherRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_PUSHER_APP_KEY) {
-      const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-        cluster: 'eu',
-      });
-      const channelName = `agenda-${grantId}`;
-      const eventName = 'events-updated';
+    if (!isPusherReady || !pusherRef.current) return;
 
-      const channel = pusher.subscribe(channelName);
-      channel.bind(eventName, () => {
-        setLastEventUpdate(new Date());
-      });
-      return () => {
-        channel.unbind(eventName);
-        pusher.unsubscribe(channelName);
-      };
-    }
-  }, [grantId]);
+    const channelName = `agenda-${props.id}`;
+    const eventName = 'access-granted';
+
+    const channel = pusherRef.current.subscribe(channelName);
+
+    const handleAccessGranted = (data: {
+      grantId?: string;
+      calendarId?: string;
+    }) => {
+      setGrantId(data.grantId || '');
+      setCalendarId(data.calendarId || '');
+    };
+
+    channel.bind(eventName, handleAccessGranted);
+
+    return () => {
+      channel.unbind(eventName, handleAccessGranted);
+      pusherRef.current?.unsubscribe(channelName);
+    };
+  }, [isPusherReady, props.id]);
+
+  useEffect(() => {
+    if (!isPusherReady || !pusherRef.current || !grantId) return;
+
+    const channelName = `agenda-${grantId}`;
+    const eventName = 'events-updated';
+
+    const channel = pusherRef.current.subscribe(channelName);
+
+    const handleEventsUpdated = () => {
+      setLastEventUpdate(new Date());
+    };
+
+    channel.bind(eventName, handleEventsUpdated);
+
+    return () => {
+      channel.unbind(eventName, handleEventsUpdated);
+      pusherRef.current?.unsubscribe(channelName);
+    };
+  }, [grantId, isPusherReady]);
 
   useSpeechRecognition({
     commands: [
@@ -104,13 +125,13 @@ export default function Agenda(props: AgendaProps) {
       {
         command: ['(Affiche la) semaine précédente'],
         callback: () => {
-          setDisplayDate(subWeeks(displayDate, 1));
+          setDisplayDate((prev) => subWeeks(prev, 1));
         },
       },
       {
         command: ['(Affiche la) semaine suivante'],
         callback: () => {
-          setDisplayDate(addWeeks(displayDate, 1));
+          setDisplayDate((prev) => addWeeks(prev, 1));
         },
       },
       {
@@ -133,19 +154,19 @@ export default function Agenda(props: AgendaProps) {
     ],
   });
 
-  const id = props.id;
-
   const authUrl = new URL(
-    `/api/nylas/oauth/url?moduleId=${id}`,
+    `/api/nylas/oauth/url?moduleId=${props.id}`,
     process.env.NEXT_PUBLIC_REAL_BASE_URL,
   ).toString();
 
   const hasAccess = !!grantId;
 
   useEffect(() => {
+    let cancelled = false;
+
     const getEvents = async (displayLoading = true) => {
       try {
-        displayLoading && setLoading(true);
+        if (displayLoading) setLoading(true);
 
         const startDate = isToday(displayDate)
           ? displayDate
@@ -158,70 +179,86 @@ export default function Agenda(props: AgendaProps) {
           addDays(startDate, isToday(displayDate) ? 0 : 1),
         );
         const end = date2String(addDays(endDate, 1));
+        const range = `start=${start}&end=${end}`;
+        const url = `/api/nylas/events?identifier=${grantId}&calendarId=${calendarId}&${range}`;
 
-        const response = await fetch(
-          `/api/nylas/events?identifier=${grantId}&calendarId=${calendarId}&start=${start}&end=${end}`,
-          {
-            method: 'GET',
-          },
-        );
+        showNotification(range, 60000);
+
+        const response = await fetch(url, { method: 'GET' });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch events: ${response.status}`);
+        }
         const { events }: { events: Event[] } = await response.json();
 
-        const acceptedEvents = events.filter(
-          (event) =>
-            event.participants.some(
+        const acceptedEvents = events.filter((event) => {
+          const participants = event.participants ?? [];
+          return (
+            participants.some(
               (participant) =>
                 participant.email === props.options.primaryCalendar?.id &&
                 participant.status === 'yes',
             ) ||
-            (event.participants.length === 0 && event.status === 'confirmed'),
-        );
+            (participants.length === 0 && event.status === 'confirmed')
+          );
+        });
 
-        setEvents(acceptedEvents || []);
+        if (!cancelled) {
+          setEvents(acceptedEvents);
+        }
       } catch (error) {
-        console.error('Error fetching events:', error);
+        if (!cancelled) {
+          console.error('Error fetching events:', error);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     if (hasAccess) {
-      const dispayLoader = prevlastEventUpdate.current === lastEventUpdate;
-      prevlastEventUpdate.current = lastEventUpdate;
-      getEvents(dispayLoader);
+      const displayLoader = prevLastEventUpdate.current === lastEventUpdate;
+      prevLastEventUpdate.current = lastEventUpdate;
+      getEvents(displayLoader);
     }
-  }, [displayDate, id, grantId, calendarId, weeksToShow, lastEventUpdate]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    displayDate,
+    grantId,
+    calendarId,
+    weeksToShow,
+    lastEventUpdate,
+    hasAccess,
+    showNotification,
+    props.options.primaryCalendar?.id,
+  ]);
 
   useEffect(() => {
     const now = new Date();
     const tomorrow = new Date();
-    tomorrow.setHours(24, 0, 0, 0); // minuit demain
+    tomorrow.setHours(24, 0, 0, 0);
     const msUntilMidnight = tomorrow.getTime() - now.getTime();
 
-    console.log(msUntilMidnight);
+    let interval: ReturnType<typeof setInterval> | null = null;
 
     const timeout = setTimeout(() => {
-      setLastEventUpdate(new Date()); // ⚡️ Déclenche la récupération via useEffect
+      setLastEventUpdate(new Date());
 
-      // Ensuite, mettre à jour tous les jours à minuit
-      const interval = setInterval(
+      interval = setInterval(
         () => {
-          setLastEventUpdate(new Date()); // ⚡️ Re-déclenche automatiquement getEvents
+          setLastEventUpdate(new Date());
         },
         24 * 60 * 60 * 1000,
-      ); // chaque 24h
-
-      // Nettoyer l'intervalle quand le composant est démonté
-      const clear = () => clearInterval(interval);
-      window.addEventListener('beforeunload', clear); // en plus du return ci-dessous
-
-      return () => {
-        clearInterval(interval);
-        window.removeEventListener('beforeunload', clear);
-      };
+      );
     }, msUntilMidnight);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   const eventsByMonth = groupByMonth(groupByDay(events));
@@ -240,7 +277,7 @@ export default function Agenda(props: AgendaProps) {
           ) : (
             <div className="fixed">
               <QRCodeCanvas value={authUrl} size={512} marginSize={1} />
-              <a href={authUrl} target="_blank">
+              <a href={authUrl} target="_blank" rel="noopener noreferrer">
                 {authUrl}
               </a>
             </div>
