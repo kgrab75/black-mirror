@@ -232,7 +232,6 @@ export default function Agenda(props: AgendaProps) {
     weeksToShow,
     lastEventUpdate,
     hasAccess,
-    showNotification,
     props.options.primaryCalendar?.id,
   ]);
 
