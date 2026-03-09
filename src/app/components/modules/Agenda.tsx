@@ -35,8 +35,6 @@ export default function Agenda(props: AgendaProps) {
   const [loading, setLoading] = useState(true);
   const [displayDate, setDisplayDate] = useState(new Date());
   const [displayDisplayDate, setDisplayDisplayDate] = useState(false);
-  const [lastEventUpdate, setLastEventUpdate] = useState(new Date());
-  const prevLastEventUpdate = useRef(lastEventUpdate);
 
   const pusherRef = useRef<Pusher | null>(null);
 
@@ -88,7 +86,7 @@ export default function Agenda(props: AgendaProps) {
     const channel = pusherRef.current.subscribe(channelName);
 
     const handleEventsUpdated = () => {
-      setLastEventUpdate(new Date());
+      setDisplayDate(new Date());
     };
 
     channel.bind(eventName, handleEventsUpdated);
@@ -182,7 +180,7 @@ export default function Agenda(props: AgendaProps) {
         const range = `start=${start}&end=${end}`;
         const url = `/api/nylas/events?identifier=${grantId}&calendarId=${calendarId}&${range}`;
 
-        showNotification(range, 60000);
+        //showNotification(range, 60000);
 
         const response = await fetch(url, { method: 'GET' });
         if (!response.ok) {
@@ -217,9 +215,7 @@ export default function Agenda(props: AgendaProps) {
     };
 
     if (hasAccess) {
-      const displayLoader = prevLastEventUpdate.current === lastEventUpdate;
-      prevLastEventUpdate.current = lastEventUpdate;
-      getEvents(displayLoader);
+      getEvents(true);
     }
 
     return () => {
@@ -230,7 +226,6 @@ export default function Agenda(props: AgendaProps) {
     grantId,
     calendarId,
     weeksToShow,
-    lastEventUpdate,
     hasAccess,
     props.options.primaryCalendar?.id,
   ]);
@@ -244,11 +239,11 @@ export default function Agenda(props: AgendaProps) {
     let interval: ReturnType<typeof setInterval> | null = null;
 
     const timeout = setTimeout(() => {
-      setLastEventUpdate(new Date());
+      setDisplayDate(new Date());
 
       interval = setInterval(
         () => {
-          setLastEventUpdate(new Date());
+          setDisplayDate(new Date());
         },
         24 * 60 * 60 * 1000,
       );
