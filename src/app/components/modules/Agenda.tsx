@@ -3,19 +3,11 @@
 import Loader from '@/app/components/Loader';
 import EventsList from '@/app/components/modules/agenda/EventsList';
 import TextFit from '@/app/components/TextFit';
-import useNotification from '@/app/hooks/useNotification';
 import { AgendaProps } from '@/app/lib/definitions';
 import { stringToNumber } from '@/app/lib/utils';
 import { groupByDay, groupByMonth } from '@/app/lib/utils/agenda';
 import { date2String, parseDate } from '@/app/lib/utils/date';
-import {
-  addDays,
-  addWeeks,
-  endOfWeek,
-  isToday,
-  startOfWeek,
-  subWeeks,
-} from 'date-fns';
+import { addWeeks, endOfWeek, isToday, startOfWeek, subWeeks } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Event } from 'nylas';
 import Pusher from 'pusher-js';
@@ -25,7 +17,6 @@ import { useSpeechRecognition } from 'react-speech-recognition';
 
 export default function Agenda(props: AgendaProps) {
   const ref = useRef(null);
-  const { showNotification } = useNotification();
   const [grantId, setGrantId] = useState(props.options.grantId || '');
   const [calendarId, setCalendarId] = useState(
     props.options.primaryCalendar?.id || '',
@@ -33,7 +24,9 @@ export default function Agenda(props: AgendaProps) {
   const [events, setEvents] = useState<Event[]>([]);
   const [weeksToShow, setWeeksToShow] = useState(2);
   const [loading, setLoading] = useState(true);
-  const [displayDate, setDisplayDate] = useState(new Date());
+  const [displayDate, setDisplayDate] = useState(
+    new Date('2026-03-12T00:00:00'),
+  );
   const [displayDisplayDate, setDisplayDisplayDate] = useState(false);
 
   const pusherRef = useRef<Pusher | null>(null);
@@ -173,14 +166,11 @@ export default function Agenda(props: AgendaProps) {
           locale: fr,
         });
 
-        const start = date2String(
-          addDays(startDate, isToday(displayDate) ? 0 : 1),
-        );
-        const end = date2String(addDays(endDate, 1));
+        const start = date2String(startDate);
+        const end = date2String(endDate);
         const range = `start=${start}&end=${end}`;
-        const url = `/api/nylas/events?identifier=${grantId}&calendarId=${calendarId}&${range}`;
 
-        //showNotification(range, 60000);
+        const url = `/api/nylas/events?identifier=${grantId}&calendarId=${calendarId}&${range}`;
 
         const response = await fetch(url, { method: 'GET' });
         if (!response.ok) {
@@ -199,6 +189,7 @@ export default function Agenda(props: AgendaProps) {
             (participants.length === 0 && event.status === 'confirmed')
           );
         });
+        console.log({ eventsIn: acceptedEvents });
 
         if (!cancelled) {
           setEvents(acceptedEvents);
@@ -254,8 +245,9 @@ export default function Agenda(props: AgendaProps) {
       if (interval) clearInterval(interval);
     };
   }, []);
-
-  const eventsByMonth = groupByMonth(groupByDay(events));
+  const eventsGroupByDay = groupByDay(events);
+  console.log({ eventsOut: eventsGroupByDay });
+  const eventsByMonth = groupByMonth(eventsGroupByDay);
 
   return (
     <div className="relative size-full px-1" ref={ref}>

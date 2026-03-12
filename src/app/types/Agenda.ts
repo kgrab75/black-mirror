@@ -1,53 +1,61 @@
-
-
 export type EventWithDay = {
-    type: 'datespan';
-    title: string;
+  type: 'datespan';
+  title: string;
 };
 
 export type EventWithTime = {
-    type: 'timespan';
-    title: string;
-    startTime: Date;
-    endTime: Date;
+  type: 'timespan';
+  title: string;
+  startTime: Date;
+  endTime: Date;
 };
 
-export type EventType = EventWithDay | EventWithTime;
+export type EventWithMultidayTimespan = {
+  type: 'multidayTimespan';
+  title: string;
+  startTime?: Date;
+  endTime?: Date;
+};
+
+export type EventType =
+  | EventWithDay
+  | EventWithTime
+  | EventWithMultidayTimespan;
 
 export type EventsByDay = {
-    date: string;
-    events: EventType[];
+  date: string;
+  events: EventType[];
 };
 
 export type EventsByMonth = {
-    year: number;
-    month: number;
-    eventsByDay: EventsByDay[];
+  year: number;
+  month: number;
+  eventsByDay: EventsByDay[];
 };
 
 export type EventsListProps = {
-    eventsByMonth: MonthItemProps[];
+  eventsByMonth: MonthItemProps[];
 };
 
 export type MonthItemProps = {
-    year: number;
-    month: number;
-    eventsByDay: DayItemProps[];
+  year: number;
+  month: number;
+  eventsByDay: DayItemProps[];
 };
 
 export type DayItemProps = {
-    date: string;
-    events: EventProps[];
+  date: string;
+  events: EventProps[];
 };
 
 export type EventItemProps = {
-    event: EventProps;
+  event: EventProps;
 };
 
 type EventProps = EventTimeProps & { title: string };
 
 export type EventTimeProps = {
-    type: 'datespan' | 'timespan';
-    startTime?: Date;
-    endTime?: Date;
+  type: 'datespan' | 'timespan' | 'multidayTimespan';
+  startTime?: Date;
+  endTime?: Date;
 };

@@ -1,7 +1,12 @@
 import { differenceInWeeks, isMatch, parse, startOfWeek } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-export const date2String = (date: Date) => date.toISOString().split('T')[0];
+export const date2String = (date: Date) => {
+  const localizedDate = new Date(
+    date.getTime() - date.getTimezoneOffset() * 60000,
+  );
+  return localizedDate.toISOString().split('T')[0];
+};
 
 export const dateFromYearMonth = (year: number, month: number) =>
   new Date(`${year}-${month + 1}-1`);
@@ -115,3 +120,21 @@ export function convertToSeconds(duration: string): number | null {
 
   return totalSeconds;
 }
+
+export const isExactlyMidnightInTimeZone = (date: Date, timeZone: string) => {
+  const formatter = new Intl.DateTimeFormat('en-GB', {
+    timeZone,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  });
+
+  const parts = formatter.formatToParts(date);
+
+  const hour = parts.find((part) => part.type === 'hour')?.value;
+  const minute = parts.find((part) => part.type === 'minute')?.value;
+  const second = parts.find((part) => part.type === 'second')?.value;
+
+  return hour === '00' && minute === '00' && second === '00';
+};
