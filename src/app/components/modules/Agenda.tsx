@@ -24,9 +24,7 @@ export default function Agenda(props: AgendaProps) {
   const [events, setEvents] = useState<Event[]>([]);
   const [weeksToShow, setWeeksToShow] = useState(2);
   const [loading, setLoading] = useState(true);
-  const [displayDate, setDisplayDate] = useState(
-    new Date('2026-03-12T00:00:00'),
-  );
+  const [displayDate, setDisplayDate] = useState(new Date());
   const [displayDisplayDate, setDisplayDisplayDate] = useState(false);
 
   const pusherRef = useRef<Pusher | null>(null);
